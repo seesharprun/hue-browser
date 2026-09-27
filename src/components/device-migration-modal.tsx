@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   applyBridgeMigration,
   previewMigration,
@@ -32,6 +32,7 @@ type Props = {
 export function DeviceMigrationModal(props: Props) {
   const { bridges, groups, open, onClose, onDone } = props;
   const titleId = useId();
+  const modalRef = useRef<HTMLDivElement>(null);
   const [preview, setPreview] = useState<MigrationDevice[] | null>(null);
   const [results, setResults] = useState<MigrationResult[] | null>(null);
   const [busy, setBusy] = useState(false);
@@ -48,6 +49,10 @@ export function DeviceMigrationModal(props: Props) {
   const canApply =
     !!preview?.length &&
     (!results || results.some((item) => item.status !== "moved"));
+
+  useEffect(() => {
+    if (open) modalRef.current?.focus();
+  }, [open]);
 
   if (!open) return null;
 
@@ -101,7 +106,7 @@ export function DeviceMigrationModal(props: Props) {
         if (event.key === "Escape") onClose();
       }}
     >
-      <div className="modal-box max-w-2xl">
+      <div ref={modalRef} tabIndex={-1} className="modal-box max-w-2xl">
         <MigrationHeader titleId={titleId} onClose={onClose} />
         <MigrationFields
           bridgeId={selection.selectedBridgeId}

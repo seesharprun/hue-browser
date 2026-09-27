@@ -98,7 +98,7 @@ export function planMigration(resources: unknown[], request: MigrationRequest) {
 
   const { records, byLight } = devices(resources);
   const rtype = request.groupType === "room" ? "device" : "light";
-  const sourceChildren = [...source.children];
+  const sourceChildren = new Set(source.children);
   const destinationChildren = destination ? [...destination.children] : null;
   const destinationId = destination?.id;
   const planned: PlannedDevice[] = [];
@@ -114,16 +114,14 @@ export function planMigration(resources: unknown[], request: MigrationRequest) {
         "The source zone contains a device without a light.",
       );
     const updates: PlannedDevice["updates"] = [];
-    const sourceIndex = sourceChildren.indexOf(rid);
-    if (sourceIndex === -1) {
+    if (!sourceChildren.delete(rid)) {
       throw new DeviceDataError(
         "The source group contains duplicate or unexpected members.",
       );
     }
-    sourceChildren.splice(sourceIndex, 1);
     updates.push({
       path: `/clip/v2/resource/${request.groupType}/${source.id}`,
-      body: { children: refs(sourceChildren, rtype) },
+      body: { children: refs([...sourceChildren], rtype) },
     });
     if (
       destinationId &&

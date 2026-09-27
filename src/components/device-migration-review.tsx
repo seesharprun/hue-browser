@@ -37,11 +37,7 @@ export function MigrationReview({
           onClick={onPreview}
           disabled={!canPreview || busy}
         >
-          <GroupIcon
-            name={groupType === "room" ? "room" : "zones"}
-            label="Preview"
-          />{" "}
-          Preview
+          <GroupIcon name={groupType} label="Preview" /> Preview
         </button>
         <button
           type="button"

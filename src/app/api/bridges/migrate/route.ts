@@ -9,6 +9,13 @@ import {
 } from "../../../../lib/bridges/route-error";
 import { BridgeError, isRecord } from "../../../../lib/bridges/types";
 import { DeviceDataError, readResources } from "../../../../lib/devices/groups";
+
+const INPUT_ERRORS = [
+  "Choose a different destination group.",
+  "The source group is no longer on this bridge.",
+  "The destination group is no longer on this bridge.",
+];
+
 import { applyMigration } from "../../../../lib/devices/migration-apply";
 import {
   isMigrationRequest,
@@ -56,8 +63,10 @@ export async function POST(request: Request) {
     );
     return bridgeResponse({ results });
   } catch (error) {
-    if (error instanceof DeviceDataError)
-      return bridgeFailure(new BridgeError(error.message, 502));
+    if (error instanceof DeviceDataError) {
+      const status = INPUT_ERRORS.includes(error.message) ? 400 : 502;
+      return bridgeFailure(new BridgeError(error.message, status));
+    }
     return bridgeFailure(error);
   }
 }
