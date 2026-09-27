@@ -12,7 +12,11 @@ export function isBridge(value: unknown): value is Bridge {
     typeof value.id === "string" &&
     /^[a-f0-9]{16}$/i.test(value.id) &&
     typeof value.address === "string" &&
-    (value.name === null || typeof value.name === "string")
+    (value.name === null || typeof value.name === "string") &&
+    // Bridges saved before the model was recorded stay valid without it.
+    (value.model === undefined ||
+      value.model === null ||
+      typeof value.model === "string")
   );
 }
 
@@ -48,6 +52,11 @@ export function saveBridge(bridges: PairedBridge[], bridge: PairedBridge) {
   const updated = [...bridges.filter((item) => item.id !== bridge.id), bridge];
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   return updated;
+}
+
+export function replaceBridges(bridges: PairedBridge[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(bridges));
+  return bridges;
 }
 
 export function forgetBridge(bridges: PairedBridge[], id: string) {

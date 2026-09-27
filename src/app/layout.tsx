@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Nunito_Sans } from "next/font/google";
 import { ThemeToggle } from "../components/theme-toggle";
 import { themeInitScript } from "../lib/theme";
+import { ToastProvider } from "../lib/ui/toasts";
 import "./globals.css";
 
 const nunito = Nunito_Sans({
@@ -31,14 +32,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="min-h-full flex flex-col">
-        <header className="sticky top-0 z-40 flex h-16 items-center gap-3 bg-base-100/90 px-4 backdrop-blur md:px-6">
-          <span className="min-w-0 truncate font-semibold text-base">
-            Hue Browser
-          </span>
-          <div className="flex-1" />
-          <ThemeToggle />
-        </header>
-        {children}
+        <ToastProvider>
+          <header className="sticky top-0 z-40 flex h-16 items-center gap-3 bg-base-100/90 px-4 backdrop-blur md:px-6">
+            <span className="min-w-0 truncate font-semibold text-base">
+              Hue Browser
+            </span>
+            <div className="flex-1" />
+            <ThemeToggle />
+          </header>
+          {children}
+        </ToastProvider>
       </body>
     </html>
   );

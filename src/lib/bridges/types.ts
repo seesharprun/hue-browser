@@ -4,6 +4,8 @@ export type Bridge = {
   id: string;
   address: string;
   name: string | null;
+  /** Philips model id, missing for bridges paired before it was recorded. */
+  model?: string | null;
 };
 
 export type PairedBridge = Bridge & { applicationKey: string };
@@ -92,6 +94,10 @@ export function bridgeFromConfig(value: unknown, address: string): Bridge {
     name:
       typeof value.name === "string" && value.name.trim()
         ? value.name.trim().slice(0, 80)
+        : null,
+    model:
+      typeof value.modelid === "string" && value.modelid.trim()
+        ? value.modelid.trim().slice(0, 16)
         : null,
   };
 }

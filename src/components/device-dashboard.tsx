@@ -1,20 +1,32 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { PairedBridge } from "../lib/bridges/types";
 import { groupId } from "../lib/devices/filtering";
 import { useDeviceCommand } from "../lib/devices/use-command";
 import { useDeviceView } from "../lib/devices/use-device-view";
 import { useDevices } from "../lib/devices/use-devices";
+import { useToasts } from "../lib/ui/toasts";
+import { BridgeFooter } from "./bridge-footer";
 import { DeviceSkeleton } from "./device-skeleton";
+import { DeviceStats } from "./device-stats";
 import { DeviceTable } from "./device-table";
 import { DeviceToolbar } from "./device-toolbar";
+import { ViewFab } from "./view-fab";
 
 export function DeviceDashboard({ bridges }: { bridges: PairedBridge[] }) {
   const { rows, errors, loading, refresh } = useDevices(bridges);
   const view = useDeviceView(rows);
   const command = useDeviceCommand(bridges);
+  const { notify } = useToasts();
   const { focus, clearFocus } = view;
+
+  // One details panel at a time keeps the table readable while comparing rows.
+  const [open, setOpen] = useState("");
+  const toggle = useCallback(
+    (key: string) => setOpen((current) => (current === key ? "" : key)),
+    [],
+  );
 
   // Tag links switch grouping first, so the scroll waits for the new groups.
   useEffect(() => {
@@ -25,51 +37,36 @@ export function DeviceDashboard({ bridges }: { bridges: PairedBridge[] }) {
     clearFocus();
   }, [focus, clearFocus]);
 
+  // Keyed on the bridge so a refresh replaces its toast instead of stacking.
+  useEffect(() => {
+    for (const [id, error] of Object.entries(errors)) {
+      const name = bridges.find((item) => item.id === id)?.name ?? id;
+      notify({
+        tone: "error",
+        key: `bridge:${id}`,
+        message: `${name}: ${error}`,
+      });
+    }
+  }, [errors, bridges, notify]);
+
   return (
     <section aria-label="Device dashboard">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <p
-          role="status"
-          className="flex items-center gap-2 text-sm text-base-content/70"
-        >
-          {loading && (
-            <span
-              aria-hidden="true"
-              className="loading loading-ring loading-sm text-primary"
-            />
-          )}
-          {loading
-            ? `Looking for devices on ${bridges.length} ${bridges.length === 1 ? "bridge" : "bridges"}...`
-            : `${view.visible.length} of ${rows.length} devices across ${bridges.length} ${bridges.length === 1 ? "bridge" : "bridges"}`}
-        </p>
-        <button
-          type="button"
-          className="btn btn-outline btn-sm"
-          onClick={refresh}
-          disabled={loading}
-        >
-          {loading && (
-            <span
-              aria-hidden="true"
-              className="loading loading-spinner loading-xs"
-            />
-          )}
-          Refresh
-        </button>
-      </div>
-      {Object.entries(errors).map(([id, error]) => (
-        <p key={id} role="alert" className="alert alert-error mb-3">
-          {bridges.find((item) => item.id === id)?.name ?? id}: {error}
-        </p>
-      ))}
-      <DeviceToolbar view={view} />
+      <DeviceStats
+        rows={rows}
+        shown={view.visible.length}
+        bridges={bridges.length}
+        loading={loading && rows.length === 0}
+      />
+      <DeviceToolbar view={view} loading={loading} onRefresh={refresh} />
       {/* Placeholder groups keep the page from collapsing to blank while the
           bridges answer, which otherwise reads as a broken table. */}
       {loading && rows.length === 0 && (
-        <>
-          <DeviceSkeleton columns={view.visibleColumns.length} />
-          <DeviceSkeleton columns={view.visibleColumns.length} />
-        </>
+        <div className="aura aura-sm block w-full text-primary">
+          <div className="rounded-box bg-base-100">
+            <DeviceSkeleton columns={view.visibleColumns.length} />
+            <DeviceSkeleton columns={view.visibleColumns.length} />
+          </div>
+        </div>
       )}
       {!loading && rows.length === 0 && Object.keys(errors).length === 0 && (
         <p>No devices found on these bridges.</p>
@@ -85,9 +82,12 @@ export function DeviceDashboard({ bridges }: { bridges: PairedBridge[] }) {
               group={found}
               view={view}
               command={command}
+              accordion={{ open, toggle }}
             />
           ),
       )}
+      {rows.length > 0 && <ViewFab view={view} />}
+      <BridgeFooter bridges={bridges} rows={rows} />
     </section>
   );
 }

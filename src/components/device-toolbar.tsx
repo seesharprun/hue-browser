@@ -1,48 +1,59 @@
 "use client";
 
-import type { DeviceView, GroupBy } from "../lib/devices/use-device-view";
+import type { DeviceView } from "../lib/devices/use-device-view";
+import { RefreshIcon } from "./icons";
 
-const views: { value: GroupBy; label: string }[] = [
-  { value: "room", label: "Rooms" },
-  { value: "zones", label: "Zones" },
-  { value: "none", label: "Flat" },
-];
-
-export function DeviceToolbar({ view }: { view: DeviceView }) {
+export function DeviceToolbar({
+  view,
+  loading,
+  onRefresh,
+}: {
+  view: DeviceView;
+  loading: boolean;
+  onRefresh: () => void;
+}) {
   return (
     <div className="mb-5 flex flex-wrap items-center gap-3">
       <label className="min-w-48 flex-1">
         <span className="sr-only">Search devices</span>
-        <input
-          className="input w-full"
-          type="search"
-          placeholder="Search devices"
-          value={view.query}
-          onChange={(event) => view.setQuery(event.target.value)}
-        />
-      </label>
-      <fieldset className="join">
-        <legend className="sr-only">Group devices by</legend>
-        {views.map((item) => (
+        {/* The aura keeps turning while the bridges answer, so a slow network
+            reads as work in progress rather than a dead control. */}
+        <span className={`block ${loading ? "aura text-primary" : ""}`}>
           <input
-            key={item.value}
-            type="radio"
-            name="device-group"
-            className="btn btn-sm join-item"
-            aria-label={item.label}
-            checked={view.group === item.value}
-            onChange={() => view.setGroup(item.value)}
+            className="input w-full"
+            type="search"
+            placeholder="Search devices"
+            value={view.query}
+            onChange={(event) => view.setQuery(event.target.value)}
           />
-        ))}
-      </fieldset>
-      <button
-        type="button"
-        className="btn btn-ghost btn-sm"
-        onClick={view.clearAll}
-        disabled={!view.active}
-      >
-        Clear filters
-      </button>
+        </span>
+      </label>
+      <div className="join">
+        <button
+          type="button"
+          className="btn btn-outline btn-sm join-item"
+          onClick={onRefresh}
+          disabled={loading}
+        >
+          {loading ? (
+            <span
+              aria-hidden="true"
+              className="loading loading-spinner loading-xs"
+            />
+          ) : (
+            <RefreshIcon />
+          )}
+          Refresh
+        </button>
+        <button
+          type="button"
+          className="btn btn-outline btn-sm join-item"
+          onClick={view.clearAll}
+          disabled={!view.active}
+        >
+          Clear filters
+        </button>
+      </div>
     </div>
   );
 }

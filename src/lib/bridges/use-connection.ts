@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { identifyBridge, pairBridge } from "./browser";
-import { clearBridges, forgetBridge, loadBridges, saveBridge } from "./storage";
+import {
+  clearBridges,
+  forgetBridge,
+  loadBridges,
+  replaceBridges,
+  saveBridge,
+} from "./storage";
 import type { Bridge, PairedBridge } from "./types";
 import { useDiscovery } from "./use-discovery";
 
@@ -29,6 +35,38 @@ export function useConnection() {
       setError(message(cause));
     }
   }, []);
+
+  // Bridges paired before the model was recorded fall back to the classic
+  // icon, so ask each of them what it is and keep the answer.
+  useEffect(() => {
+    const missing = saved.filter((bridge) => !bridge.model);
+    if (missing.length === 0) return;
+    let active = true;
+    (async () => {
+      const models = new Map<string, string>();
+      for (const bridge of missing) {
+        try {
+          const found = await identifyBridge(bridge.address);
+          if (found.id === bridge.id && found.model)
+            models.set(bridge.id, found.model);
+        } catch {
+          // An unreachable bridge simply keeps the classic icon.
+        }
+      }
+      if (!active || models.size === 0) return;
+      setSaved((current) =>
+        replaceBridges(
+          current.map((bridge) => {
+            const model = models.get(bridge.id);
+            return model ? { ...bridge, model } : bridge;
+          }),
+        ),
+      );
+    })();
+    return () => {
+      active = false;
+    };
+  }, [saved]);
 
   async function search() {
     setError("");

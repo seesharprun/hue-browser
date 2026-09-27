@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import type { ColumnKey } from "../lib/devices/columns";
 import type { DeviceCommand } from "../lib/devices/commands";
 import { groupId } from "../lib/devices/filtering";
@@ -10,7 +10,7 @@ import { ColumnHeader } from "./column-header";
 import { DeviceActions } from "./device-actions";
 import { DeviceCell } from "./device-cell";
 import { DeviceDetails } from "./device-details";
-import { DetailsIcon } from "./icons";
+import { CloseIcon, DetailsIcon } from "./icons";
 
 type Group = {
   key: string;
@@ -22,26 +22,24 @@ type Group = {
 export type CommandState = {
   run: (row: DeviceRow, command: DeviceCommand) => void;
   pending: string;
-  failed: Record<string, string>;
+};
+
+export type Accordion = {
+  open: string;
+  toggle: (key: string) => void;
 };
 
 export function DeviceTable({
   group,
   view,
   command,
+  accordion,
 }: {
   group: Group;
   view: DeviceView;
   command: CommandState;
+  accordion: Accordion;
 }) {
-  const [open, setOpen] = useState<string[]>([]);
-  const toggle = (key: string) =>
-    setOpen((current) =>
-      current.includes(key)
-        ? current.filter((item) => item !== key)
-        : [...current, key],
-    );
-
   return (
     <section
       id={groupId(group.key)}
@@ -56,7 +54,9 @@ export function DeviceTable({
         </h2>
       )}
       <div className="overflow-x-auto">
-        <table className="table table-zebra">
+        {/* Cells size to their content and the section scrolls sideways, so a
+            long product name never stacks onto a second line. */}
+        <table className="table table-zebra whitespace-nowrap">
           <thead>
             <tr>
               {view.visibleColumns.map((item) => (
@@ -76,7 +76,7 @@ export function DeviceTable({
           <tbody>
             {group.rows.map((row) => {
               const key = `${row.bridgeId}:${row.id}`;
-              const expanded = open.includes(key);
+              const expanded = accordion.open === key;
               return (
                 <Fragment key={key}>
                   <tr>
@@ -86,34 +86,33 @@ export function DeviceTable({
                       </td>
                     ))}
                     <td>
-                      <span className="flex justify-end gap-1">
+                      <span className="join flex justify-end">
                         <DeviceActions
                           row={row}
                           run={command.run}
                           busy={command.pending === row.id}
                         />
-                        <button
-                          type="button"
-                          className="btn btn-ghost btn-xs"
-                          aria-expanded={expanded}
-                          onClick={() => toggle(key)}
-                        >
-                          <DetailsIcon />
-                          Details
-                          <span className="sr-only">for {row.name}</span>
-                        </button>
+                        {/* The swap turns the icon over rather than replacing
+                            it, so the control never appears to jump. */}
+                        <label className="swap swap-rotate btn join-item btn-ghost btn-xs">
+                          <input
+                            type="checkbox"
+                            checked={expanded}
+                            onChange={() => accordion.toggle(key)}
+                            aria-label={`Details for ${row.name}`}
+                          />
+                          <span className="swap-off flex items-center gap-1">
+                            <DetailsIcon />
+                            Details
+                          </span>
+                          <span className="swap-on flex items-center gap-1">
+                            <CloseIcon />
+                            Close
+                          </span>
+                        </label>
                       </span>
                     </td>
                   </tr>
-                  {command.failed[row.id] && (
-                    <tr>
-                      <td colSpan={view.visibleColumns.length + 1}>
-                        <p role="alert" className="text-error text-sm">
-                          {command.failed[row.id]}
-                        </p>
-                      </td>
-                    </tr>
-                  )}
                   {expanded && (
                     <DeviceDetails
                       row={row}

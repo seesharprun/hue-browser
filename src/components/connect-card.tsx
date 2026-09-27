@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
 import type { ReturnTypeConnection } from "../lib/bridges/use-connection";
+import { useToasts } from "../lib/ui/toasts";
 import { BridgeActions } from "./bridge-actions";
 import { PairedBridges } from "./paired-bridges";
 
@@ -25,28 +27,27 @@ export function ConnectCard({
     reset,
     cancel,
   } = connection;
+  const { notify } = useToasts();
+
+  useEffect(() => {
+    if (error) notify({ tone: "error", key: "connect", message: error });
+  }, [error, notify]);
+
+  useEffect(() => {
+    if (notice) notify({ tone: "success", key: "connect", message: notice });
+  }, [notice, notify]);
 
   return (
     <div className="card w-full max-w-md bg-base-200/90 backdrop-blur-sm">
       <div className="card-body gap-0">
         <h1 className="font-display text-3xl">
-          Connect to a Philips Hue bridge
+          {pending ? "Pair this bridge" : "Connect to a Philips Hue bridge"}
         </h1>
-        {error && (
-          <p role="alert" className="mt-4 text-sm text-error">
-            {error}
-          </p>
-        )}
-        {notice && (
-          <p role="status" className="mt-4 text-sm text-success">
-            {notice}
-          </p>
-        )}
         {ready ? (
           <>
             <PairedBridges bridges={saved} onForget={forget} />
             {pending ? (
-              <div className="mt-7 space-y-4">
+              <div className="mt-6 space-y-4">
                 <p>
                   Press the button on{" "}
                   <strong>{pending.name ?? "this Philips Hue bridge"}</strong> (

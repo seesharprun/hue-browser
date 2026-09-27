@@ -35,14 +35,20 @@ test("accepts local bridge addresses but not public or loopback targets", () => 
 
 test("checks bridge identities and pairing responses", () => {
   const bridge = bridgeFromConfig(
-    { bridgeid: "001788FFFE123ABC", name: "Living room" },
+    { bridgeid: "001788FFFE123ABC", name: "Living room", modelid: "BSB004" },
     "192.168.1.2",
   );
   assert.deepEqual(bridge, {
     id: "001788fffe123abc",
     name: "Living room",
     address: "192.168.1.2",
+    model: "BSB004",
   });
+  // A bridge that does not report a model falls back to the classic icon.
+  assert.equal(
+    bridgeFromConfig({ bridgeid: "001788FFFE123ABC" }, "192.168.1.2").model,
+    null,
+  );
   assert.throws(
     () => bridgeFromConfig({}, bridge.address),
     /invalid identity/i,

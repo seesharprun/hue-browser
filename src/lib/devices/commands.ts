@@ -9,6 +9,15 @@ export type DeviceCommand =
   | { action: "on" | "off" }
   | { action: "color"; hex: string };
 
+export function describe(command: DeviceCommand) {
+  if (command.action === "identify") return "flashed";
+  if (command.action === "color") {
+    const found = COLORS.find((item) => item.hex === command.hex);
+    return `set to ${found ? found.name.toLowerCase() : command.hex}`;
+  }
+  return `turned ${command.action}`;
+}
+
 const HEX = /^#[0-9a-f]{6}$/i;
 
 export function isCommand(value: unknown): value is DeviceCommand {

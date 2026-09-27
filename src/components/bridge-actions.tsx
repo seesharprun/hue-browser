@@ -25,20 +25,24 @@ export function BridgeActions({
 
   return (
     <>
-      <button
-        type="button"
-        className="btn btn-primary btn-lg mt-7 w-full"
-        disabled={busy || searching}
-        onClick={onSearch}
+      <span
+        className={`mt-7 block w-full ${searching ? "aura text-primary" : ""}`}
       >
-        {searching && (
-          <span
-            aria-hidden="true"
-            className="loading loading-spinner loading-sm"
-          />
-        )}
-        {searching ? "Finding bridges..." : "Search my network"}
-      </button>
+        <button
+          type="button"
+          className="btn btn-primary btn-lg w-full"
+          disabled={busy || searching}
+          onClick={onSearch}
+        >
+          {searching && (
+            <span
+              aria-hidden="true"
+              className="loading loading-spinner loading-sm"
+            />
+          )}
+          {searching ? "Finding bridges..." : "Search my network"}
+        </button>
+      </span>
       <p className="mt-3 text-sm text-base-content/60">
         Uses Philips Hue online discovery. The server needs internet access.
       </p>

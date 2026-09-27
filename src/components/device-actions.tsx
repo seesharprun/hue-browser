@@ -35,7 +35,7 @@ export function DeviceActions({
         type="button"
         popoverTarget={popover}
         style={{ anchorName: anchor } as CSSProperties}
-        className="btn btn-ghost btn-xs"
+        className="btn join-item btn-ghost btn-xs"
         disabled={busy}
       >
         {busy ? (

@@ -3,12 +3,13 @@
 import { useCallback, useState } from "react";
 import { sendCommand } from "../bridges/browser";
 import type { PairedBridge } from "../bridges/types";
-import type { DeviceCommand } from "./commands";
+import { useToasts } from "../ui/toasts";
+import { type DeviceCommand, describe } from "./commands";
 import type { DeviceRow } from "./types";
 
 export function useDeviceCommand(bridges: PairedBridge[]) {
   const [pending, setPending] = useState("");
-  const [failed, setFailed] = useState<Record<string, string>>({});
+  const { notify } = useToasts();
 
   const run = useCallback(
     async (row: DeviceRow, command: DeviceCommand) => {
@@ -16,32 +17,38 @@ export function useDeviceCommand(bridges: PairedBridge[]) {
       // Identify addresses the device itself; power and color need its light.
       const resource =
         command.action === "identify" ? row.id : (row.light?.id ?? "");
+      const key = `command:${row.bridgeId}:${row.id}`;
       if (!bridge || !resource) {
-        setFailed((current) => ({
-          ...current,
-          [row.id]: "This device cannot run that command.",
-        }));
+        notify({
+          tone: "error",
+          key,
+          message: `${row.name} cannot run that command.`,
+        });
         return;
       }
       setPending(row.id);
-      setFailed((current) => {
-        const { [row.id]: _removed, ...rest } = current;
-        return rest;
-      });
       try {
         await sendCommand(bridge, resource, command);
+        notify({
+          tone: "success",
+          key,
+          message: `${row.name} ${describe(command)}.`,
+        });
       } catch (cause) {
-        setFailed((current) => ({
-          ...current,
-          [row.id]:
-            cause instanceof Error ? cause.message : "The command failed.",
-        }));
+        notify({
+          tone: "error",
+          key,
+          message:
+            cause instanceof Error
+              ? `${row.name}: ${cause.message}`
+              : `${row.name}: the command failed.`,
+        });
       } finally {
         setPending("");
       }
     },
-    [bridges],
+    [bridges, notify],
   );
 
-  return { run, pending, failed };
+  return { run, pending };
 }
