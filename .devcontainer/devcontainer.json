@@ -1,0 +1,19 @@
+{
+  "name": "hue-browser",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:24-bookworm",
+  "onCreateCommand": "npm ci",
+  "forwardPorts": [3000, 4000],
+  "portsAttributes": {
+    "3000": { "label": "Application" },
+    "4000": { "label": "Documentation" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "biomejs.biome",
+        "github.vscode-github-actions",
+        "ms-azuretools.vscode-containers"
+      ]
+    }
+  }
+}
