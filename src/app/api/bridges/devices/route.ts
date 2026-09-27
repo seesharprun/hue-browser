@@ -1,11 +1,11 @@
-import { getBridgeResources } from "../../../../lib/bridges/resources";
+import { getBridgeResources } from "../../../../lib/bridges/resources.ts";
 import {
   bridgeFailure,
   bridgeInput,
   bridgeResponse,
-} from "../../../../lib/bridges/route-error";
-import { BridgeError } from "../../../../lib/bridges/types";
-import { DeviceDataError, deviceRows } from "../../../../lib/devices/parse";
+} from "../../../../lib/bridges/route-error.ts";
+import { BridgeError } from "../../../../lib/bridges/types.ts";
+import { DeviceDataError, deviceRows } from "../../../../lib/devices/parse.ts";
 
 export const runtime = "nodejs";
 

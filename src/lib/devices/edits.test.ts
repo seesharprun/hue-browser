@@ -138,3 +138,13 @@ testEdits("refuses zones for a device without a light", () => {
     /cannot join a zone/i,
   );
 });
+
+testEdits("leaves a device with no groups unchanged", () => {
+  const sensor = [
+    { id: DEVICE, type: "device", services: [{ rid: LIGHT, rtype: "button" }] },
+  ];
+  editAssert.deepEqual(
+    planEdits(sensor, { deviceId: DEVICE, roomId: null, zoneIds: [] }),
+    [],
+  );
+});

@@ -1,5 +1,4 @@
-import { NextResponse } from "next/server";
-import { BridgeError, isBridgeId, isLocalAddress, isRecord } from "./types";
+import { BridgeError, isBridgeId, isLocalAddress, isRecord } from "./types.ts";
 
 export async function bridgeInput(request: Request, needsId = false) {
   if (!request.headers.get("content-type")?.startsWith("application/json")) {
@@ -21,11 +20,12 @@ export async function bridgeInput(request: Request, needsId = false) {
     address: body.address,
     id: typeof body.id === "string" ? body.id : "",
     applicationKey: body.applicationKey,
+    body,
   };
 }
 
 export function bridgeResponse(data: unknown, status = 200) {
-  return NextResponse.json(data, {
+  return Response.json(data, {
     status,
     headers: { "cache-control": "no-store" },
   });

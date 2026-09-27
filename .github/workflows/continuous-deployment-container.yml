@@ -6,19 +6,22 @@ on:
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository }}
 jobs:
-  publish:
-    name: Build and publish the container image
-    runs-on: ubuntu-latest
+  build:
+    name: Build the ${{ matrix.platform }} image
+    # Each architecture builds on a runner that is native to it, so npm ci and
+    # the Next.js build never run under QEMU emulation.
+    runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    timeout-minutes: 30
     permissions:
       contents: read
-      # Required to push packages to the GitHub Container Registry.
+      # Required to push image layers to the GitHub Container Registry.
       packages: write
+    strategy:
+      matrix:
+        platform: [linux/amd64, linux/arm64]
     steps:
       - name: Check out the repository
         uses: actions/checkout@v7
-      # QEMU and Buildx provide the emulation needed for arm64 builds.
-      - name: Set up QEMU for cross-architecture builds
-        uses: docker/setup-qemu-action@v4
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
       - name: Sign in to the GitHub Container Registry
@@ -27,8 +30,61 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      # Tag each image as latest and with its commit SHA, so a specific
-      # build can always be pinned.
+      # Used to name the digest artifact uniquely per architecture.
+      - name: Derive a filesystem-safe platform name
+        id: platform-pair
+        run: echo "pair=${PLATFORM//\//-}" >> "$GITHUB_OUTPUT"
+        env:
+          PLATFORM: ${{ matrix.platform }}
+      # Push each architecture by digest instead of by tag. The digests are
+      # combined into one multi-architecture manifest in the publish job.
+      - name: Build and push the image by digest
+        id: build
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          outputs: type=image,name=${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+          cache-from: type=gha,scope=${{ matrix.platform }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.platform }}
+      - name: Record the pushed digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+      - name: Upload the digest for the publish job
+        uses: actions/upload-artifact@v7
+        with:
+          name: digests-${{ steps.platform-pair.outputs.pair }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+  publish:
+    name: Publish the multi-architecture manifest
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      # Required to push the merged manifest to the GitHub Container Registry.
+      packages: write
+    steps:
+      - name: Download the architecture digests
+        uses: actions/download-artifact@v8
+        with:
+          path: /tmp/digests
+          pattern: digests-*
+          merge-multiple: true
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      - name: Sign in to the GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      # Tag the image as latest and with its commit SHA, so a specific build
+      # can always be pinned.
       - name: Determine image tags and labels
         id: meta
         uses: docker/metadata-action@v6
@@ -37,14 +93,13 @@ jobs:
           tags: |
             type=raw,value=latest
             type=sha,format=long
-      # arm64 covers Raspberry Pi and Apple Silicon hosts.
-      - name: Build and publish the multi-architecture image
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      # Combine the per-architecture digests into one manifest carrying every
+      # tag computed above.
+      - name: Create and push the multi-architecture manifest
+        working-directory: /tmp/digests
+        run: |
+          tags=$(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON")
+          digests=$(printf '${{ env.IMAGE_NAME }}@sha256:%s ' *)
+          docker buildx imagetools create $tags $digests
+      - name: Inspect the published manifest
+        run: docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
