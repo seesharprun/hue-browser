@@ -30,6 +30,6 @@
     "blume": "^2.0.3",
     "daisyui": "^5.7.46",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^7"
   }
 }
