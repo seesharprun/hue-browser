@@ -1,13 +1,13 @@
 import { findDevice, lightOf, members, UUID } from "./edit-targets.ts";
-import { collectGroups, DeviceDataError, isRecord } from "./groups.ts";
 import {
   createGroupUpdate,
-  type RoomCreate,
   isRoomCreate,
   isZoneCreate,
   NAME_LIMIT,
+  type RoomCreate,
   type ZoneCreate,
 } from "./group-create.ts";
+import { collectGroups, DeviceDataError, isRecord } from "./groups.ts";
 
 export { NAME_LIMIT };
 

@@ -3,11 +3,11 @@
 import { useId, useState } from "react";
 import type { EditRequest } from "../lib/devices/edits";
 import { NAME_LIMIT } from "../lib/devices/edits";
+import type { RoomCreate, ZoneCreate } from "../lib/devices/group-create";
 import {
   promptRoomCreate,
   promptZoneCreate,
 } from "../lib/devices/group-prompts";
-import type { RoomCreate, ZoneCreate } from "../lib/devices/group-create";
 import type { DeviceRow, GroupOption } from "../lib/devices/types";
 import { CloseIcon } from "./icons";
 import { NEW_ROOM, RoomPicker, UNASSIGNED } from "./room-picker";

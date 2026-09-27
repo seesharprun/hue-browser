@@ -29,7 +29,7 @@ You need a few things before you start.
 
 ## Get started
 
-Read the [installation guide](/installation) to run the app, then [connect a bridge](/usage/connect-bridges) and [browse your devices](/usage/browse-devices). Editing and testing lights are still being built.
+Read the [installation guide](/installation) to run the app, then [connect a bridge](/usage/connect-bridges) and [browse your devices](/usage/browse-devices). The dashboard can rename devices, move them into rooms and zones, create new groups, and test lights from the same table.
 
 ## Appearance
 

@@ -15,7 +15,8 @@ export function findDevice(resources: unknown[], deviceId: string) {
 export function lightOf(device: Record<string, unknown>): string | null {
   if (!Array.isArray(device.services)) return null;
   for (const service of device.services) {
-    if (isRecord(service) && service.rtype === "light") return reference(service);
+    if (isRecord(service) && service.rtype === "light")
+      return reference(service);
   }
   return null;
 }

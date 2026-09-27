@@ -1,7 +1,7 @@
 "use client";
 
-import type { GroupOption } from "../lib/devices/types";
 import type { ZoneCreate } from "../lib/devices/group-create";
+import type { GroupOption } from "../lib/devices/types";
 import { PlusIcon } from "./icons";
 
 /**
@@ -51,7 +51,7 @@ export function ZoneChecklist({
         ))}
         {created.map((zone, index) => (
           <label
-            key={`${zone.name}:${index}`}
+            key={zone.name}
             className="label flex w-full cursor-pointer justify-start gap-3 py-1"
           >
             <input

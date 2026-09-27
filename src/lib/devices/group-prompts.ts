@@ -44,5 +44,5 @@ export function promptBridge(bridges: PairedBridge[]) {
     "1",
   );
   const index = Number(choice) - 1;
-  return Number.isInteger(index) ? bridges[index] ?? null : null;
+  return Number.isInteger(index) ? (bridges[index] ?? null) : null;
 }

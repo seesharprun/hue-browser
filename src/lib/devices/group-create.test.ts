@@ -6,8 +6,8 @@ const {
   isCreateGroupRequest,
 }: typeof import("./group-create") = require("./group-create.ts");
 
-const DEVICE = "11111111-1111-1111-1111-111111111111";
-const LIGHT = "22222222-2222-2222-2222-222222222222";
+const GROUP_DEVICE = "11111111-1111-1111-1111-111111111111";
+const GROUP_LIGHT = "22222222-2222-2222-2222-222222222222";
 
 testGroups("validates room and zone create requests", () => {
   groupAssert.equal(
@@ -15,12 +15,16 @@ testGroups("validates room and zone create requests", () => {
       type: "room",
       name: "Kitchen",
       archetype: "kitchen",
-      deviceId: DEVICE,
+      deviceId: GROUP_DEVICE,
     }),
     true,
   );
   groupAssert.equal(
-    isCreateGroupRequest({ type: "zone", name: "Downstairs", lightId: LIGHT }),
+    isCreateGroupRequest({
+      type: "zone",
+      name: "Downstairs",
+      lightId: GROUP_LIGHT,
+    }),
     true,
   );
   groupAssert.equal(
@@ -43,25 +47,25 @@ testGroups("plans Philips Hue room and zone creation", () => {
       type: "room",
       name: " Kitchen ",
       archetype: "kitchen",
-      deviceId: DEVICE,
+      deviceId: GROUP_DEVICE,
     }),
     {
       method: "POST",
       path: "/clip/v2/resource/room",
       body: {
         metadata: { name: "Kitchen", archetype: "kitchen" },
-        children: [{ rid: DEVICE, rtype: "device" }],
+        children: [{ rid: GROUP_DEVICE, rtype: "device" }],
       },
     },
   );
   groupAssert.deepEqual(
-    createGroupUpdate({ type: "zone", name: "Desk", lightId: LIGHT }),
+    createGroupUpdate({ type: "zone", name: "Desk", lightId: GROUP_LIGHT }),
     {
       method: "POST",
       path: "/clip/v2/resource/zone",
       body: {
         metadata: { name: "Desk" },
-        children: [{ rid: LIGHT, rtype: "light" }],
+        children: [{ rid: GROUP_LIGHT, rtype: "light" }],
       },
     },
   );

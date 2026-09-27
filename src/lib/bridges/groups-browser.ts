@@ -1,6 +1,6 @@
 import type { GroupCreateRequest } from "../devices/group-create";
-import type { PairedBridge } from "./types";
 import { callApi } from "./browser";
+import type { PairedBridge } from "./types";
 
 export async function createBridgeGroup(
   bridge: PairedBridge,

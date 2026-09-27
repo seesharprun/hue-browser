@@ -38,17 +38,19 @@ export function isCreateGroupRequest(
 ): value is GroupCreateRequest {
   if (!isRecord(value)) return false;
   if (value.type === "room") {
+    const deviceId = value.deviceId;
     return (
       isRoomCreate(value) &&
-      (value.deviceId === undefined ||
-        (typeof value.deviceId === "string" && UUID.test(value.deviceId)))
+      (deviceId === undefined ||
+        (typeof deviceId === "string" && UUID.test(deviceId)))
     );
   }
   if (value.type === "zone") {
+    const lightId = value.lightId;
     return (
       isZoneCreate(value) &&
-      (value.lightId === undefined ||
-        (typeof value.lightId === "string" && UUID.test(value.lightId)))
+      (lightId === undefined ||
+        (typeof lightId === "string" && UUID.test(lightId)))
     );
   }
   return false;
