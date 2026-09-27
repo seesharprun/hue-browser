@@ -90,10 +90,13 @@ function Preview({
   );
 }
 
+const count = (value: number, singular: string) =>
+  `${value} ${value === 1 ? singular : `${singular}s`}`;
+
 export function resultSummary(results: MigrationResult[]) {
   const moved = results.filter((item) => item.status === "moved").length;
   const failed = results.length - moved;
   return failed
-    ? `Moved ${moved} devices; ${failed} need attention.`
-    : `Moved ${moved} ${moved === 1 ? "device" : "devices"}.`;
+    ? `Moved ${count(moved, "device")}; ${count(failed, "device")} need attention.`
+    : `Moved ${count(moved, "device")}.`;
 }

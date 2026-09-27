@@ -44,6 +44,9 @@ export function DeviceMigrationModal(props: Props) {
   }
 
   const selection = useMigrationState(bridges, groups, reset);
+  const canApply =
+    !!preview?.length &&
+    (!results || results.some((item) => item.status !== "moved"));
 
   if (!open) return null;
 
@@ -117,7 +120,7 @@ export function DeviceMigrationModal(props: Props) {
           groupType={selection.groupType}
           busy={busy}
           canPreview={!!selection.bridge && !!selection.sourceId}
-          canApply={!!preview?.length && !results}
+          canApply={canApply}
           onPreview={loadPreview}
           onApply={applyMigration}
         />

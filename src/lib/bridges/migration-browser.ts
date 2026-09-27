@@ -6,7 +6,9 @@ import type {
 import { isRecord } from "./storage";
 import type { PairedBridge } from "./types";
 
-function isDevice(value: unknown): value is MigrationDevice {
+function isDevice(
+  value: unknown,
+): value is MigrationDevice & Record<string, unknown> {
   return (
     isRecord(value) &&
     typeof value.id === "string" &&
@@ -15,13 +17,12 @@ function isDevice(value: unknown): value is MigrationDevice {
 }
 
 function isResult(value: unknown): value is MigrationResult {
-  if (!isRecord(value) || !isDevice(value)) return false;
-  const result = value as { status?: unknown; error?: unknown };
+  if (!isDevice(value)) return false;
   return (
-    (result.status === "moved" ||
-      result.status === "failed" ||
-      result.status === "skipped") &&
-    (result.error === undefined || typeof result.error === "string")
+    (value.status === "moved" ||
+      value.status === "failed" ||
+      value.status === "skipped") &&
+    (value.error === undefined || typeof value.error === "string")
   );
 }
 

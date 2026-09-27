@@ -26,7 +26,7 @@ export type PlannedDevice = MigrationDevice & {
   updates: { path: string; body: unknown }[];
 };
 
-const UUID = /^[a-f0-9-]{36}$/i;
+const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 
 export function isMigrationRequest(value: unknown): value is MigrationRequest {
   return (
@@ -113,7 +113,11 @@ export function planMigration(resources: unknown[], request: MigrationRequest) {
         "The source zone contains a device without a light.",
       );
     const updates: PlannedDevice["updates"] = [];
-    sourceChildren.splice(sourceChildren.indexOf(rid), 1);
+    const sourceIndex = sourceChildren.indexOf(rid);
+    if (sourceIndex === -1) {
+      throw new DeviceDataError("The source group changed while planning.");
+    }
+    sourceChildren.splice(sourceIndex, 1);
     updates.push({
       path: `/clip/v2/resource/${request.groupType}/${source.id}`,
       body: { children: refs(sourceChildren, rtype) },
