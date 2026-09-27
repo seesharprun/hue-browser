@@ -6,6 +6,14 @@ const {
   toChromaticity,
 }: typeof import("./commands") = require("./commands.ts");
 
+const commandsNear = (
+  actual: ReturnType<typeof toChromaticity>,
+  expected: ReturnType<typeof toChromaticity>,
+) => {
+  commandsAssert.ok(Math.abs(actual.x - expected.x) <= 0.0001);
+  commandsAssert.ok(Math.abs(actual.y - expected.y) <= 0.0001);
+};
+
 testCommands("only supported commands are accepted", () => {
   for (const value of [
     { action: "identify" },
@@ -30,11 +38,18 @@ testCommands("only supported commands are accepted", () => {
 
 testCommands("colors convert to chromaticity within the visible gamut", () => {
   const red = toChromaticity("#ff0000");
-  commandsAssert.ok(red.x > 0.6 && red.y < 0.35);
+  commandsNear(red, { x: 0.7006, y: 0.2993 });
   const blue = toChromaticity("#0000ff");
-  commandsAssert.ok(blue.x < 0.2 && blue.y < 0.1);
+  commandsNear(blue, { x: 0.1355, y: 0.0399 });
   // Black has no chromaticity to report, so it must not divide by zero.
   commandsAssert.deepEqual(toChromaticity("#000000"), { x: 0, y: 0 });
+  commandsNear(toChromaticity("#ffffff"), { x: 0.3227, y: 0.329 });
+  for (const hex of ["#808080", "#404040", "#0a0a0a", "#0b0b0b"]) {
+    commandsNear(toChromaticity(hex), { x: 0.3227, y: 0.329 });
+  }
+  commandsNear(toChromaticity("#f00"), red);
+  commandsAssert.throws(() => toChromaticity("red"), /valid hex color/i);
+  commandsAssert.throws(() => toChromaticity("#fffffff"), /valid hex color/i);
 });
 
 testCommands("identify targets the device and power targets its light", () => {

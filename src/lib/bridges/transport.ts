@@ -1,17 +1,15 @@
-import { Agent, request } from "node:https";
-import { checkServerIdentity, type TLSSocket } from "node:tls";
-import { HUE_BRIDGE_CA } from "./hue-ca";
+import { request } from "node:https";
+import type { TLSSocket } from "node:tls";
+import { bridgeRequestOptions } from "./transport-options.ts";
 import {
   applicationKeyFromResponse,
   type Bridge,
   BridgeError,
   bridgeFromConfig,
-} from "./types";
+} from "./types.ts";
 
 const TIMEOUT_MS = 5_000;
 const MAX_BYTES = 32_768;
-// Resumed TLS sessions can omit the peer certificate needed to check bridge ID.
-const bridgeAgent = new Agent({ maxCachedSessions: 0 });
 
 export function bridgeRequest(
   address: string,
@@ -24,26 +22,14 @@ export function bridgeRequest(
 ): Promise<{ value: unknown; certificateId: string | undefined }> {
   return new Promise((resolve, reject) => {
     const req = request(
-      {
-        hostname: address,
-        port: 443,
-        agent: bridgeAgent,
+      bridgeRequestOptions(
+        address,
         path,
         method,
-        ca: HUE_BRIDGE_CA,
-        rejectUnauthorized: true,
-        checkServerIdentity: (_, certificate) =>
-          expectedId ? checkServerIdentity(expectedId, certificate) : undefined,
-        headers: {
-          ...(body
-            ? {
-                "content-type": "application/json",
-                "content-length": Buffer.byteLength(body),
-              }
-            : {}),
-          ...(applicationKey ? { "hue-application-key": applicationKey } : {}),
-        },
-      },
+        expectedId,
+        body,
+        applicationKey,
+      ),
       (res) => {
         const socket = res.socket as TLSSocket;
         const peerCertificate = socket.getPeerCertificate();

@@ -1,22 +1,27 @@
 import {
   getBridgeResources,
   sendBridgeCommand,
-} from "../../../../lib/bridges/resources";
+} from "../../../../lib/bridges/resources.ts";
 import {
   bridgeFailure,
   bridgeInput,
   bridgeResponse,
-} from "../../../../lib/bridges/route-error";
-import { BridgeError, isRecord } from "../../../../lib/bridges/types";
-import { isEditRequest, planEdits } from "../../../../lib/devices/edits";
-import { DeviceDataError, readResources } from "../../../../lib/devices/groups";
+} from "../../../../lib/bridges/route-error.ts";
+import { BridgeError, isRecord } from "../../../../lib/bridges/types.ts";
+import { isEditRequest, planEdits } from "../../../../lib/devices/edits.ts";
+import {
+  DeviceDataError,
+  readResources,
+} from "../../../../lib/devices/groups.ts";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
-    const body = await request.clone().json();
-    const { address, id, applicationKey } = await bridgeInput(request, true);
+    const { address, id, applicationKey, body } = await bridgeInput(
+      request,
+      true,
+    );
     if (
       typeof applicationKey !== "string" ||
       !/^[a-zA-Z0-9-]{16,128}$/.test(applicationKey)

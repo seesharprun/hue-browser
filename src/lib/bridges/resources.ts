@@ -1,5 +1,5 @@
-import { bridgeRequest, identifyBridge } from "./transport";
-import { BridgeError, isRecord } from "./types";
+import { bridgeRequest, identifyBridge } from "./transport.ts";
+import { BridgeError, isRecord } from "./types.ts";
 
 function commandFailure(value: unknown): string | null {
   if (!isRecord(value) || !Array.isArray(value.errors)) return null;

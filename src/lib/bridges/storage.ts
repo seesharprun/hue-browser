@@ -36,9 +36,7 @@ export function loadBridges(): PairedBridge[] {
   try {
     value = JSON.parse(text);
   } catch {
-    throw new Error(
-      "Saved bridge data is invalid. Clear saved bridges to pair again.",
-    );
+    return [];
   }
   if (!Array.isArray(value) || !value.every(isPairedBridge)) {
     throw new Error(

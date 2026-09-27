@@ -19,6 +19,7 @@ export function describe(command: DeviceCommand) {
 }
 
 const HEX = /^#[0-9a-f]{6}$/i;
+const SHORT_HEX = /^#[0-9a-f]{3}$/i;
 
 export function isCommand(value: unknown): value is DeviceCommand {
   if (typeof value !== "object" || value === null) return false;
@@ -34,8 +35,16 @@ function gamma(channel: number) {
     : channel / 12.92;
 }
 
+/** Converts three- or six-digit hex colors and throws on any other format. */
 export function toChromaticity(hex: string) {
-  const value = Number.parseInt(hex.slice(1), 16);
+  const short = SHORT_HEX.test(hex);
+  if (!HEX.test(hex) && !short) {
+    throw new Error("Enter a valid hex color.");
+  }
+  const expanded = short
+    ? `#${[...hex.slice(1)].map((digit) => `${digit}${digit}`).join("")}`
+    : hex;
+  const value = Number.parseInt(expanded.slice(1), 16);
   const red = gamma(((value >> 16) & 255) / 255);
   const green = gamma(((value >> 8) & 255) / 255);
   const blue = gamma((value & 255) / 255);
