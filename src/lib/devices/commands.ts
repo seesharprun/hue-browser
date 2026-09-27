@@ -36,10 +36,11 @@ function gamma(channel: number) {
 }
 
 export function toChromaticity(hex: string) {
-  if (!HEX.test(hex) && !SHORT_HEX.test(hex)) {
+  const short = SHORT_HEX.test(hex);
+  if (!HEX.test(hex) && !short) {
     throw new Error("Enter a valid hex color.");
   }
-  const expanded = SHORT_HEX.test(hex)
+  const expanded = short
     ? `#${[...hex.slice(1)].map((digit) => `${digit}${digit}`).join("")}`
     : hex;
   const value = Number.parseInt(expanded.slice(1), 16);
