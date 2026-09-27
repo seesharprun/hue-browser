@@ -73,7 +73,12 @@ export function DeviceEditModal({
             const roomEdit =
               roomId === NEW_ROOM && newRoom
                 ? { createRoom: newRoom }
-                : { roomId: roomId === UNASSIGNED ? null : roomId };
+                : {
+                    roomId:
+                      roomId === UNASSIGNED || roomId === NEW_ROOM
+                        ? null
+                        : roomId,
+                  };
             onSave(row, {
               name,
               ...roomEdit,

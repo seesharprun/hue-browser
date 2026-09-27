@@ -20,20 +20,19 @@ export function useGroupCreate(bridges: PairedBridge[], refresh: () => void) {
       if (!bridge) return;
       const room = type === "room" ? promptRoomCreate() : null;
       const zone = type === "zone" ? promptZoneCreate() : null;
-      const group = room ?? zone;
-      if (!group) return;
+      const name = room?.name ?? zone?.name;
+      if (!name) return;
       setCreating(true);
       try {
         if (room) {
           await createBridgeGroup(bridge, { type: "room", ...room });
-        } else {
-          if (!zone) return;
+        } else if (zone) {
           await createBridgeGroup(bridge, { type: "zone", ...zone });
         }
         notify({
           tone: "success",
           key: `create-${type}`,
-          message: `Created ${group.name}.`,
+          message: `Created ${name}.`,
         });
         refresh();
       } catch (cause) {
@@ -42,8 +41,8 @@ export function useGroupCreate(bridges: PairedBridge[], refresh: () => void) {
           key: `create-${type}`,
           message:
             cause instanceof Error
-              ? `${group.name}: ${cause.message}`
-              : `Could not create ${group.name}.`,
+              ? `${name}: ${cause.message}`
+              : `Could not create ${name}.`,
         });
       } finally {
         setCreating(false);

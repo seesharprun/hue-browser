@@ -35,6 +35,9 @@ export function isEditRequest(value: unknown): value is EditRequest {
     if (typeof value.roomId !== "string" || !UUID.test(value.roomId))
       return false;
   }
+  if (value.roomId !== undefined && value.createRoom !== undefined) {
+    return false;
+  }
   if (value.createRoom !== undefined && !isRoomCreate(value.createRoom)) {
     return false;
   }
@@ -134,11 +137,9 @@ export function planEdits(resources: unknown[], edit: EditRequest): Update[] {
       });
     }
     for (const zone of edit.createZones ?? []) {
-      if (light) {
-        updates.push(
-          createGroupUpdate({ type: "zone", ...zone, lightId: light }),
-        );
-      }
+      updates.push(
+        createGroupUpdate({ type: "zone", ...zone, lightId: light as string }),
+      );
     }
   }
 

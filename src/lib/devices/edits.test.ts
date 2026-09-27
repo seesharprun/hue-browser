@@ -54,6 +54,14 @@ testEdits("validates edit requests", () => {
     false,
   );
   editAssert.equal(
+    isEditRequest({
+      deviceId: DEVICE,
+      roomId: OFFICE,
+      createRoom: { name: "Library", archetype: "office" },
+    }),
+    false,
+  );
+  editAssert.equal(
     isEditRequest({ deviceId: DEVICE, zoneIds: ["nope"] }),
     false,
   );
