@@ -2,7 +2,7 @@
 
 import type { PairedBridge } from "../bridges/types";
 import type { RoomCreate, ZoneCreate } from "./group-create";
-import { NAME_LIMIT } from "./group-create";
+import { ARCHETYPE, NAME_LIMIT } from "./group-create";
 
 function cleanName(value: string | null) {
   const name = value?.trim() ?? "";
@@ -18,7 +18,7 @@ export function promptRoomCreate(): RoomCreate | null {
   const archetype = window
     .prompt("Room archetype for Philips Hue, such as living_room", "other")
     ?.trim();
-  if (!archetype || !/^[a-z][a-z0-9_]{1,31}$/.test(archetype)) {
+  if (!archetype || !ARCHETYPE.test(archetype)) {
     window.alert("Enter a Philips Hue room archetype such as living_room.");
     return null;
   }

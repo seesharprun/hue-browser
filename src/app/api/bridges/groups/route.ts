@@ -8,6 +8,7 @@ import { BridgeError, isRecord } from "../../../../lib/bridges/types";
 import {
   createGroupUpdate,
   isCreateGroupRequest,
+  NAME_LIMIT,
 } from "../../../../lib/devices/group-create";
 
 export const runtime = "nodejs";
@@ -23,8 +24,12 @@ export async function POST(request: Request) {
       throw new BridgeError("Pair this bridge again to create groups.", 400);
     }
     if (!isRecord(body) || !isCreateGroupRequest(body.group)) {
+      const type =
+        isRecord(body) && isRecord(body.group) ? body.group.type : "";
       throw new BridgeError(
-        "Enter a group name of 32 characters or fewer and a valid room archetype.",
+        type === "zone"
+          ? `Enter a zone name of ${NAME_LIMIT} characters or fewer.`
+          : `Enter a room name of ${NAME_LIMIT} characters or fewer and a valid room archetype.`,
         400,
       );
     }

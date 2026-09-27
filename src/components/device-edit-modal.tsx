@@ -3,7 +3,7 @@
 import { useId, useState } from "react";
 import type { EditRequest } from "../lib/devices/edits";
 import { NAME_LIMIT } from "../lib/devices/edits";
-import type { RoomCreate, ZoneCreate } from "../lib/devices/group-create";
+import type { RoomCreate } from "../lib/devices/group-create";
 import {
   promptRoomCreate,
   promptZoneCreate,
@@ -11,7 +11,7 @@ import {
 import type { DeviceRow, GroupOption } from "../lib/devices/types";
 import { CloseIcon } from "./icons";
 import { NEW_ROOM, RoomPicker, UNASSIGNED } from "./room-picker";
-import { ZoneChecklist } from "./zone-checklist";
+import { type PendingZone, ZoneChecklist } from "./zone-checklist";
 
 export function DeviceEditModal({
   row,
@@ -32,7 +32,7 @@ export function DeviceEditModal({
   const [roomId, setRoomId] = useState(row.roomId ?? UNASSIGNED);
   const [zoneIds, setZoneIds] = useState<string[]>(row.zoneIds);
   const [newRoom, setNewRoom] = useState<RoomCreate | null>(null);
-  const [newZones, setNewZones] = useState<ZoneCreate[]>([]);
+  const [newZones, setNewZones] = useState<PendingZone[]>([]);
   const titleId = useId();
   const zonesAllowed = row.light !== null;
 
@@ -51,7 +51,10 @@ export function DeviceEditModal({
   const createZone = () => {
     const zone = promptZoneCreate();
     if (!zone) return;
-    setNewZones((current) => [...current, zone]);
+    setNewZones((current) => [
+      ...current,
+      { ...zone, tempId: crypto.randomUUID() },
+    ]);
   };
 
   return (
@@ -74,7 +77,12 @@ export function DeviceEditModal({
             onSave(row, {
               name,
               ...roomEdit,
-              ...(zonesAllowed ? { zoneIds, createZones: newZones } : {}),
+              ...(zonesAllowed
+                ? {
+                    zoneIds,
+                    createZones: newZones.map(({ name }) => ({ name })),
+                  }
+                : {}),
             });
           }}
         >
@@ -111,9 +119,9 @@ export function DeviceEditModal({
             disabled={saving}
             onToggle={toggleZone}
             onCreate={createZone}
-            onRemoveCreated={(index) =>
+            onRemoveCreated={(id) =>
               setNewZones((current) =>
-                current.filter((_, itemIndex) => itemIndex !== index),
+                current.filter((zone) => zone.tempId !== id),
               )
             }
           />

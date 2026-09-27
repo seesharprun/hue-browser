@@ -4,7 +4,6 @@ import { useCallback, useState } from "react";
 import { createBridgeGroup } from "../bridges/groups-browser";
 import type { PairedBridge } from "../bridges/types";
 import { useToasts } from "../ui/toasts";
-import type { GroupCreateRequest } from "./group-create";
 import {
   promptBridge,
   promptRoomCreate,
@@ -18,14 +17,19 @@ export function useGroupCreate(bridges: PairedBridge[], refresh: () => void) {
   const create = useCallback(
     async (type: "room" | "zone") => {
       const bridge = promptBridge(bridges);
-      const group = type === "room" ? promptRoomCreate() : promptZoneCreate();
-      if (!bridge || !group) return;
+      if (!bridge) return;
+      const room = type === "room" ? promptRoomCreate() : null;
+      const zone = type === "zone" ? promptZoneCreate() : null;
+      const group = room ?? zone;
+      if (!group) return;
       setCreating(true);
       try {
-        await createBridgeGroup(bridge, {
-          type,
-          ...group,
-        } as GroupCreateRequest);
+        if (room) {
+          await createBridgeGroup(bridge, { type: "room", ...room });
+        } else {
+          if (!zone) return;
+          await createBridgeGroup(bridge, { type: "zone", ...zone });
+        }
         notify({
           tone: "success",
           key: `create-${type}`,

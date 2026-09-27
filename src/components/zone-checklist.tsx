@@ -4,6 +4,8 @@ import type { ZoneCreate } from "../lib/devices/group-create";
 import type { GroupOption } from "../lib/devices/types";
 import { PlusIcon } from "./icons";
 
+export type PendingZone = ZoneCreate & { tempId: string };
+
 /**
  * The checkbox list of zones shared by the modal editor. A grid keeps each zone
  * on its own line so the checkbox and its name stay together as the list grows.
@@ -20,13 +22,13 @@ export function ZoneChecklist({
 }: {
   zones: GroupOption[];
   selected: string[];
-  created?: ZoneCreate[];
+  created?: PendingZone[];
   /** Zones hold light services, so a switch or sensor cannot belong to one. */
   allowed: boolean;
   disabled: boolean;
   onToggle: (id: string) => void;
   onCreate?: () => void;
-  onRemoveCreated?: (index: number) => void;
+  onRemoveCreated?: (id: string) => void;
 }) {
   return (
     <fieldset className="fieldset" disabled={disabled || !allowed}>
@@ -49,16 +51,16 @@ export function ZoneChecklist({
             <span className="truncate">{zone.name}</span>
           </label>
         ))}
-        {created.map((zone, index) => (
+        {created.map((zone) => (
           <label
-            key={zone.name}
+            key={zone.tempId}
             className="label flex w-full cursor-pointer justify-start gap-3 py-1"
           >
             <input
               type="checkbox"
               className="checkbox checkbox-sm"
               checked
-              onChange={() => onRemoveCreated?.(index)}
+              onChange={() => onRemoveCreated?.(zone.tempId)}
             />
             <span className="truncate">{zone.name}</span>
           </label>

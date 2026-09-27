@@ -108,10 +108,10 @@ export function planEdits(resources: unknown[], edit: EditRequest): Update[] {
     }
   }
 
-  if (edit.zoneIds !== undefined) {
+  if (edit.zoneIds !== undefined || edit.createZones?.length) {
     const light = lightOf(device);
     const zones = collectGroups(resources, "zone");
-    const wanted = new Set(edit.zoneIds);
+    const wanted = new Set(edit.zoneIds ?? []);
     for (const id of wanted) {
       if (!zones.some((zone) => zone.id === id))
         throw new DeviceDataError("That zone is no longer on this bridge.");

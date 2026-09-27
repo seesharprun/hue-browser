@@ -10,7 +10,7 @@ export type GroupCreateRequest =
   | (ZoneCreate & { type: "zone"; lightId?: string });
 
 const UUID = /^[a-f0-9-]{36}$/i;
-const ARCHETYPE = /^[a-z][a-z0-9_]{1,31}$/;
+export const ARCHETYPE = /^[a-z][a-z0-9_]{1,31}$/;
 
 export function validName(value: unknown): value is string {
   return (
