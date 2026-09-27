@@ -5,19 +5,28 @@ test("identify, power, and colour controls send commands and show a busy row", a
   page,
 }) => {
   const commands: unknown[] = [];
-  let release: (() => void) | undefined;
+  let releaseFirstCommand: () => void = () => undefined;
+  let markFirstCommandReady: () => void = () => undefined;
+  const firstCommandReady = new Promise<void>((resolve) => {
+    markFirstCommandReady = resolve;
+  });
   await page.route("**/api/bridges/command", async (route) => {
     commands.push(route.request().postDataJSON());
-    if (commands.length === 1)
-      await new Promise<void>((resolve) => (release = resolve));
+    if (commands.length === 1) {
+      await new Promise<void>((resolve) => {
+        releaseFirstCommand = resolve;
+        markFirstCommandReady();
+      });
+    }
     await route.fulfill({ json: { ok: true } });
   });
   await openDashboard(page);
   const testButton = page.getByRole("button", { name: /Test Kitchen Pendant/ });
   await testButton.click();
   await page.getByRole("button", { name: "Flash to identify" }).click();
+  await firstCommandReady;
   await expect(testButton).toBeDisabled();
-  release?.();
+  releaseFirstCommand();
   await expect(
     page.getByText("Kitchen Pendant flashed.").first(),
   ).toBeVisible();

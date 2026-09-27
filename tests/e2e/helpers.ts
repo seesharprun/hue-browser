@@ -27,13 +27,13 @@ export async function openDashboard(page: Page) {
   await seedStorage(page);
   await routeFixtureDevices(page);
   await page.goto("/");
+  const devicesHeading = page.getByRole("heading", { name: "Devices" });
   const devicesStep = page.getByRole("button", {
     name: "Go to the Devices step",
   });
-  if ((await devicesStep.count()) > 0) {
-    await devicesStep.click({ timeout: 500 }).catch(() => undefined);
-  }
-  await expect(page.getByRole("heading", { name: "Devices" })).toBeVisible();
+  await expect(devicesHeading.or(devicesStep).first()).toBeVisible();
+  if (await devicesStep.isVisible()) await devicesStep.click();
+  await expect(devicesHeading).toBeVisible();
   await expect(
     page.getByRole("cell", { name: "Kitchen Pendant", exact: true }),
   ).toBeVisible();
