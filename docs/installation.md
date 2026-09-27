@@ -25,6 +25,10 @@ Visit [localhost:3000](http://localhost:3000) in your browser. You should see th
 
 If the page does not load, confirm that the terminal window is still running and that no other app is using port 3000. To use a different port, replace the first number, for example `-p 3100:3000`, and then visit [localhost:3100](http://localhost:3100).
 
+## Connect to a bridge
+
+Once the welcome screen loads, follow the [bridge connection guide](/usage/connect-bridges) to find a bridge online or enter its local IP address and authorize pairing with its physical button.
+
 ## Keep it running
 
 To keep Hue Browser running in the background, even after you close the terminal or restart your computer, start it with the command below instead.

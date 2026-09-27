@@ -26,6 +26,8 @@ RUN addgroup -S nodejs && adduser -S nextjs -G nodejs
 COPY --from=builder /app/.next/standalone ./
 # Static assets are not part of the standalone bundle and are copied separately.
 COPY --from=builder /app/.next/static ./.next/static
+# The bridge trust anchor is read from disk by the server-side API.
+COPY --from=builder /app/src/lib/bridges/hue-ca.pem ./src/lib/bridges/hue-ca.pem
 
 USER nextjs
 EXPOSE 3000

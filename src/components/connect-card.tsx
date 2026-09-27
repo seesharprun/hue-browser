@@ -1,41 +1,100 @@
-/* The quiet edge overlay for the scene. Searching the network and entering an
-   address are offered as two equal ways in, with the search first because it
-   asks the least of someone who does not know their bridge address. */
+"use client";
+
+import { useConnection } from "../lib/bridges/use-connection";
+import { BridgeActions } from "./bridge-actions";
+import { PairedBridges } from "./paired-bridges";
+
 export function ConnectCard() {
+  const connection = useConnection();
+  const {
+    saved,
+    found,
+    pending,
+    busy,
+    searching,
+    ready,
+    error,
+    notice,
+    search,
+    select,
+    pair,
+    forget,
+    reset,
+    cancel,
+  } = connection;
+
   return (
     <div className="card w-full max-w-md bg-base-200/90 backdrop-blur-sm">
       <div className="card-body gap-0">
         <h1 className="font-display text-3xl">
           Connect to a Philips Hue bridge
         </h1>
-        <button
-          type="button"
-          className="btn btn-primary btn-lg mt-7 w-full"
-          disabled
-        >
-          Search my network
-        </button>
-        <p className="mt-3 text-sm text-base-content/50">
-          Finds bridges on the network this computer is already using.
-        </p>
-        <div className="divider my-6 text-base-content/40">or</div>
-        <form className="flex flex-col gap-4">
-          <label className="floating-label">
-            <span>Bridge address</span>
-            <input
-              type="text"
-              name="bridge"
-              placeholder="192.168.1.2"
-              className="input input-lg w-full"
-            />
-          </label>
-          <button type="submit" className="btn btn-secondary btn-lg" disabled>
-            Connect to this address
-          </button>
-        </form>
-        <p className="mt-3 text-sm text-base-content/50">
-          Use this when you already know where your bridge lives.
-        </p>
+        {error && (
+          <p role="alert" className="mt-4 text-sm text-error">
+            {error}
+          </p>
+        )}
+        {notice && (
+          <p role="status" className="mt-4 text-sm text-success">
+            {notice}
+          </p>
+        )}
+        {ready ? (
+          <>
+            <PairedBridges bridges={saved} onForget={forget} />
+            {pending ? (
+              <div className="mt-7 space-y-4">
+                <p>
+                  Press the button on{" "}
+                  <strong>{pending.name ?? "this Philips Hue bridge"}</strong> (
+                  {pending.address}), then pair within 30 seconds.
+                </p>
+                <button
+                  type="button"
+                  className="btn btn-primary w-full"
+                  onClick={pair}
+                  disabled={busy}
+                >
+                  {busy ? "Pairing..." : "Pair this bridge"}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-ghost w-full"
+                  onClick={cancel}
+                  disabled={busy}
+                >
+                  Use another bridge
+                </button>
+              </div>
+            ) : (
+              <BridgeActions
+                busy={busy}
+                searching={searching}
+                found={found}
+                onSearch={search}
+                onSelect={select}
+              />
+            )}
+          </>
+        ) : error ? (
+          <>
+            <p className="mt-3 text-sm">
+              Allow this site's browser storage or clear saved connections to
+              continue.
+            </p>
+            <button
+              type="button"
+              className="btn btn-ghost mt-5"
+              onClick={reset}
+            >
+              Clear saved bridges
+            </button>
+          </>
+        ) : (
+          <p className="mt-5 text-sm" role="status">
+            Loading saved bridges...
+          </p>
+        )}
       </div>
     </div>
   );

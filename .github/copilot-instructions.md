@@ -25,6 +25,12 @@ This repository is a web-based React application for managing residential Philip
 
 - Keep the architecture modular, with focused components, modules, and responsibilities.
 - Keep source code under `src`.
+- Keep the Philips Hue bridge root certificate as a PEM file under `src` and read it in the server-side TypeScript transport; include it in the standalone Docker image rather than embedding PEM text in code or disabling TLS verification.
+- Use a dedicated HTTPS agent with TLS session caching disabled when checking Philips Hue bridge certificate identities. Node can return an empty peer certificate on a resumed session even when its CA verification succeeds; never bypass verification to work around this.
+- For bridge pairing, use Philips Hue online discovery with manual local IPv4 entry as the offline fallback; do not add mDNS networking or UPnP. Keep each browser's paired bridges and application keys in its own localStorage rather than requiring a shared Docker volume. Send keys only to the server-side API when needed, and never log them.
+- Discovery cards show a bridge ID and IP immediately. Resolve friendly names separately through verified local bridge requests, show an indicator beside each IP until its name lookup finishes, and highlight the name when available. Label the 16-character discovery identifier "Bridge ID", not "serial number".
+- If Philips Hue's online discovery service returns HTTP 429, report the rate limit explicitly and direct the user to manual IP entry; do not present it as an empty discovery result or a generic gateway error. Show a wait time from a valid Retry-After header on 429 or other errors such as 520, but do not assume 520 is throttling when no such header is present.
+- Pin `turbopack.root` to the repository working directory in the existing Next.js config when ancestor lockfiles confuse root detection. Never alter a lockfile outside this repository to suppress the warning.
 - Keep each source file at or below 150 lines. When a file approaches this limit, split it along clear responsibility boundaries.
 - Prefer convention-based defaults over custom configuration, even when a default is slightly less convenient. Keep configuration files out of the repository root unless a tool genuinely cannot work without one. Verify that a configuration file is required before adding it, rather than assuming.
 - Minimize configuration files and avoid boilerplate unless it is required.
@@ -50,6 +56,7 @@ This repository is a web-based React application for managing residential Philip
 - Add explanatory comments to infrastructure files such as Dockerfiles and workflows, where the reasoning behind each step is not obvious.
 - Include an attribution section in `readme.md` that links every toolchain, library, and package used to build the project, presented as a table. Link to each project's home page first, its documentation page if it has no home page, its package manager page if it has neither, and its GitHub repository as a last resort.
 - Update the readme and documentation at the end of every increment, before suggesting a commit message. Treat documentation as part of the increment rather than a follow-up task.
+- Keep the README's bridge-connection guidance brief and link to the usage guide for both connection methods, pairing steps, expected results, and troubleshooting. Place how-to guides in `docs/usage` so Blume generates a Usage section in the sidebar; leave installation guidance on `docs/installation.md`.
 
 ## Writing style
 

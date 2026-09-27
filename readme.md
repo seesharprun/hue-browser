@@ -34,6 +34,7 @@ Each task has a dedicated npm script. Linting and formatting are handled by Biom
 | `npm run build`     | Create a production build and type check the project           |
 | `npm start`         | Serve a production build that was already created              |
 | `npm run lint`      | Check formatting and lint rules without writing                |
+| `npm test`          | Test bridge pairing and browser storage helpers                |
 | `npm run format`    | Apply formatting and safe lint fixes                           |
 | `npm run docs:dev`  | Start the documentation site with hot reloading                |
 | `npm run docs:build`| Build the documentation site into `dist`                        |
@@ -57,6 +58,10 @@ docker run --rm -p 3000:3000 hue-browser
 ```
 
 Either way the app is available at <http://localhost:3000>. Use a different host port, such as `-p 3100:3000`, when port 3000 is already serving the development server.
+
+## Connect to a bridge
+
+Open the app and connect a Philips Hue bridge. Follow the [bridge connection guide](https://seesharprun.github.io/hue-browser/usage/connect-bridges) for both methods, physical button pairing, and what to expect afterward.
 
 ## Continuous integration and deployment
 
