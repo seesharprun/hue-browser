@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { DeviceRow } from "../lib/devices/types";
 import type { BulkCatalog } from "../lib/devices/use-bulk-edit";
 import { type BulkAction, UNASSIGNED } from "../lib/devices/use-bulk-edit";
@@ -40,6 +40,18 @@ export function BulkActionBar({
   const [zoneName, setZoneName] = useState("");
   const rooms = useMemo(() => names(rows, catalog, "rooms"), [rows, catalog]);
   const zones = useMemo(() => names(rows, catalog, "zones"), [rows, catalog]);
+
+  // A stale name from a prior selection would otherwise leave the picker
+  // showing a blank value while the buttons stay enabled for a name that no
+  // longer applies to any bridge the current selection spans.
+  useEffect(() => {
+    setRoomName((current) =>
+      current === UNASSIGNED || rooms.includes(current) ? current : UNASSIGNED,
+    );
+  }, [rooms]);
+  useEffect(() => {
+    setZoneName((current) => (zones.includes(current) ? current : ""));
+  }, [zones]);
 
   if (count === 0) return null;
 

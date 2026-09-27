@@ -26,6 +26,7 @@ type Outcome =
   | "no-light"
   | "no-match"
   | "no-bridge"
+  | "no-catalog"
   | "failed";
 
 const REASONS: Record<Exclude<Outcome, "applied">, string> = {
@@ -33,6 +34,7 @@ const REASONS: Record<Exclude<Outcome, "applied">, string> = {
   "no-light": "have no light service",
   "no-match": "have no matching room or zone on their bridge",
   "no-bridge": "are on a bridge that is no longer paired",
+  "no-catalog": "are on a bridge whose rooms and zones failed to load",
   failed: "could not be reached",
 };
 
@@ -59,17 +61,19 @@ export function useBulkEdit(
         "no-light": 0,
         "no-match": 0,
         "no-bridge": 0,
+        "no-catalog": 0,
         failed: 0,
       };
 
       for (const row of rows) {
         const bridge = bridges.find((item) => item.id === row.bridgeId);
         const groups = catalog[row.bridgeId];
-        counts[
-          !bridge || !groups
-            ? "no-bridge"
-            : await applyOne(bridge, groups, row, action)
-        ] += 1;
+        const outcome = !bridge
+          ? "no-bridge"
+          : !groups
+            ? "no-catalog"
+            : await applyOne(bridge, groups, row, action);
+        counts[outcome] += 1;
       }
 
       setRunning(false);
