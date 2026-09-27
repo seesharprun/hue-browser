@@ -22,6 +22,7 @@ export async function sendBridgeCommand(
   applicationKey: string,
   path: string,
   body: unknown,
+  method: "PUT" | "POST" = "PUT",
 ): Promise<void> {
   const bridge = await identifyBridge(address);
   if (bridge.id !== expectedId.toLowerCase()) {
@@ -34,7 +35,7 @@ export async function sendBridgeCommand(
     const { value } = await bridgeRequest(
       address,
       path,
-      "PUT",
+      method,
       bridge.id,
       JSON.stringify(body),
       applicationKey,

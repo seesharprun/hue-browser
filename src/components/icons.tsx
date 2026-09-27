@@ -41,9 +41,14 @@ const ERROR = "M15 9l-6 6m0-6 6 6M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z";
 const SUCCESS = "m8 12.5 2.7 2.7L16 9.8M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z";
 const EDIT = "M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Zm10-13 4 4";
 const SAVE = "m5 13 4 4L19 7";
+const PLUS = "M12 5v14M5 12h14";
 
 export function SaveIcon() {
   return <Icon label="Save" path={SAVE} size="size-[14px]" />;
+}
+
+export function PlusIcon() {
+  return <Icon label="Create" path={PLUS} size="size-[14px]" />;
 }
 
 export function EditIcon() {

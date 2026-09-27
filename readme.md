@@ -2,7 +2,7 @@
 
 Hue Browser is a web application for managing large residential Philips Hue deployments. A home with dozens of lights accumulates a lot of structure: every light belongs to a room, carries a name, and sits behind one of potentially several bridges. Keeping that structure tidy is easiest when you can see all of it at once.
 
-This project presents your whole deployment as an industrial-style dashboard. You can browse every device across every bridge, filter and group by room and device type, and make bulk edits such as renaming lights or reassigning them to rooms as straightforward data entry in a single table. It also offers basic identify and test controls, so you can flash a light or toggle it to confirm you are editing the fixture you think you are.
+This project presents your whole deployment as an industrial-style dashboard. You can browse every device across every bridge, filter and group by room and device type, create rooms and zones, and make bulk edits such as renaming lights or reassigning them to groups as straightforward data entry in a single table. It also offers basic identify and test controls, so you can flash a light or toggle it to confirm you are editing the fixture you think you are.
 
 Hue Browser talks to bridges through the local [Philips Hue REST API](https://github.com/openhue/openhue-api) and ships as a Docker container you can run on your own network.
 

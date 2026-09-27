@@ -62,8 +62,8 @@ Renaming a device, moving it to another room, and changing which zones it belong
 In the **Rooms** and **Zones** groupings, select **Edit** at the end of a row to open the edit dialog.
 
 1. Enter a **Name** of 32 characters or fewer. Philips Hue rejects longer names.
-2. Choose a **Room**. A device belongs to at most one room; choose **Unassigned** to remove it from its current room.
-3. Select the **Zones** the device belongs to. A device may belong to any number of zones, or none.
+2. Choose a **Room**. A device belongs to at most one room; choose **Unassigned** to remove it from its current room, or choose **Create room** to add a new room with the required Philips Hue archetype and move the device there when you save.
+3. Select the **Zones** the device belongs to. A device may belong to any number of zones, or none. Choose **Create zone** to add a new zone and include the device's light when you save.
 4. Select **Save changes** to send the edit, or **Cancel** to discard it.
 
 Only devices with a light can join a zone, because Hue zones group light services rather than whole devices. For a switch or sensor, the zone list is disabled and the dialog explains why.
@@ -83,8 +83,8 @@ Devices are saved one at a time, and the bridge has no way to apply them as a si
 
 ## Search and refresh
 
-Search and refresh work across every paired bridge at once.
+Search, refresh, and empty group creation work across every paired bridge.
 
-Use the search box to match a device name, product, model, room, zone, bridge, or capability. The dashboard loads devices when it opens and when you change paired bridges; select **Refresh** to pick up changes made elsewhere. While devices load, animated placeholder rows stand in for the table. If one bridge cannot be reached or rejects its application key, its error appears above the table while devices from other bridges remain visible. Check its network connection or pair it again if the key was revoked.
+Use the search box to match a device name, product, model, room, zone, bridge, or capability. The dashboard loads devices when it opens and when you change paired bridges; select **Refresh** to pick up changes made elsewhere. Select **Create room** or **Create zone** in the toolbar to add an empty group before moving devices into it. While devices load, animated placeholder rows stand in for the table. If one bridge cannot be reached or rejects its application key, its error appears above the table while devices from other bridges remain visible. Check its network connection or pair it again if the key was revoked.
 
 Pending edits in the flat view are kept when you refresh, so a refresh will not lose work in progress.

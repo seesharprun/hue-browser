@@ -7,6 +7,7 @@ import { useDeviceCommand } from "../lib/devices/use-command";
 import { useDeviceView } from "../lib/devices/use-device-view";
 import { useDevices } from "../lib/devices/use-devices";
 import { useDeviceEdit } from "../lib/devices/use-edit";
+import { useGroupCreate } from "../lib/devices/use-group-create";
 import { usePendingEdits } from "../lib/devices/use-pending";
 import { useToasts } from "../lib/ui/toasts";
 import { BridgeFooter } from "./bridge-footer";
@@ -26,6 +27,7 @@ export function DeviceDashboard({ bridges }: { bridges: PairedBridge[] }) {
     refresh,
   );
   const pendingEdits = usePendingEdits(bridges, rows, refresh);
+  const groupCreate = useGroupCreate(bridges, refresh);
   const { notify } = useToasts();
   const { focus, clearFocus, group } = view;
 
@@ -73,6 +75,7 @@ export function DeviceDashboard({ bridges }: { bridges: PairedBridge[] }) {
         view={view}
         loading={loading}
         pending={spreadsheet ? pendingEdits : null}
+        groupCreate={groupCreate}
         onRefresh={refresh}
       />
       {/* Placeholder groups keep the page from collapsing to blank while the
