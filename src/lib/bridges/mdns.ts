@@ -1,7 +1,8 @@
 import { createSocket, type Socket } from "node:dgram";
-import { mergeBridgeCandidates } from "./discovery-result.ts";
-import { parseMdnsResponse } from "./mdns-parser.ts";
-import type { BridgeCandidate } from "./types.ts";
+import { mergeBridgeCandidates } from "./discovery-result";
+import { parseMdnsResponse } from "./mdns-parser";
+import { mdnsQuery } from "./mdns-query";
+import type { BridgeCandidate } from "./types";
 
 const MDNS_ADDRESS = "224.0.0.251";
 const MDNS_PORT = 5353;
@@ -29,10 +30,8 @@ export function discoverMdnsBridges(
       const candidates = parseMdnsResponse(message);
       if (candidates.length === 0) return;
       found.push(candidates);
-      quickTimer ??= setTimeout(
-        () => complete(resolveFound),
-        RESPONSE_GRACE_MS,
-      );
+      if (quickTimer) clearTimeout(quickTimer);
+      quickTimer = setTimeout(() => complete(resolveFound), RESPONSE_GRACE_MS);
     });
     socket.on("error", (error) => {
       complete(() => reject(error));
@@ -59,17 +58,4 @@ function finish(socket: Socket, done: () => void) {
   } catch {
     done();
   }
-}
-
-export function mdnsQuery(service = "_hue._tcp.local"): Buffer {
-  const labels = service.split(".");
-  const name = Buffer.concat([
-    ...labels.map((label) =>
-      Buffer.from([label.length, ...Buffer.from(label)]),
-    ),
-    Buffer.from([0]),
-  ]);
-  const header = Buffer.from([0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]);
-  const question = Buffer.from([0, 12, 0x80, 1]);
-  return Buffer.concat([header, name, question]);
 }

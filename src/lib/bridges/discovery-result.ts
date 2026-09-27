@@ -25,7 +25,7 @@ export function discoveryIssue(
     message:
       cause instanceof Error
         ? cause.message
-        : `${method} discovery failed. Enter a bridge IP address instead.`,
+        : "Discovery failed. Enter a bridge IP address instead.",
   };
 }
 

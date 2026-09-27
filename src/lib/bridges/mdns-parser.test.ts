@@ -3,7 +3,7 @@ const assert: typeof import("node:assert/strict") = require("node:assert/strict"
 const {
   parseMdnsResponse,
 }: typeof import("./mdns-parser") = require("./mdns-parser.ts");
-const { mdnsQuery }: typeof import("./mdns") = require("./mdns.ts");
+const { mdnsQuery }: typeof import("./mdns-query") = require("./mdns-query.ts");
 
 test("builds a Philips Hue mDNS service query", () => {
   const query = mdnsQuery();
