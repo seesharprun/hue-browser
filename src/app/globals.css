@@ -74,6 +74,14 @@
   --noise: 1;
 }
 
+/* Type grows with the viewport so a large monitor is comfortable, but it never
+   drops below the browser default, which keeps the dense table readable on a
+   phone. The clamp is expressed in rem so a reader's own font size still
+   scales the whole interface. */
+html {
+  font-size: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+}
+
 /* Placeholders breathe like a lamp warming up rather than flashing, and each
    one starts a beat later so a loading table fills in as a slow cascade. */
 @keyframes lofi-warm {
