@@ -44,6 +44,7 @@ export async function POST(request: Request) {
         applicationKey,
         update.path,
         update.body,
+        update.method,
       );
     }
     return bridgeResponse({ applied: updates.length });

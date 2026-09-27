@@ -113,6 +113,36 @@ testEdits("adds and removes zone membership through the light service", () => {
   );
 });
 
+testEdits("creates rooms and zones while editing a device", () => {
+  editAssert.deepEqual(
+    planEdits(resources, {
+      deviceId: DEVICE,
+      createRoom: { name: "Library", archetype: "office" },
+      zoneIds: [EVENING],
+      createZones: [{ name: "Reading" }],
+    }),
+    [
+      { path: `/clip/v2/resource/room/${KITCHEN}`, body: { children: [] } },
+      {
+        method: "POST",
+        path: "/clip/v2/resource/room",
+        body: {
+          metadata: { name: "Library", archetype: "office" },
+          children: [{ rid: DEVICE, rtype: "device" }],
+        },
+      },
+      {
+        method: "POST",
+        path: "/clip/v2/resource/zone",
+        body: {
+          metadata: { name: "Reading" },
+          children: [{ rid: LIGHT, rtype: "light" }],
+        },
+      },
+    ],
+  );
+});
+
 testEdits("rejects unknown devices, rooms, and zones", () => {
   editAssert.throws(
     () => planEdits(resources, { deviceId: LIGHT }),

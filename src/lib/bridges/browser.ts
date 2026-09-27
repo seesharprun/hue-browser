@@ -4,7 +4,7 @@ import type { BridgeDevices, DeviceRow, GroupOption } from "../devices/types";
 import { isBridge, isPairedBridge, isRecord } from "./storage";
 import type { Bridge, BridgeCandidate, PairedBridge } from "./types";
 
-async function callApi(path: string, body?: unknown): Promise<unknown> {
+export async function callApi(path: string, body?: unknown): Promise<unknown> {
   const response = await fetch(`/api/bridges/${path}`, {
     method: body === undefined ? "GET" : "POST",
     headers:

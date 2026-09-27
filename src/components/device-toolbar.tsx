@@ -1,19 +1,22 @@
 "use client";
 
 import type { DeviceView } from "../lib/devices/use-device-view";
+import type { useGroupCreate } from "../lib/devices/use-group-create";
 import type { PendingEdits } from "../lib/devices/use-pending";
-import { RefreshIcon, SaveIcon } from "./icons";
+import { PlusIcon, RefreshIcon, SaveIcon } from "./icons";
 
 export function DeviceToolbar({
   view,
   loading,
   pending,
+  groupCreate,
   onRefresh,
 }: {
   view: DeviceView;
   loading: boolean;
   /** Only the flat grouping collects pending edits. */
   pending: PendingEdits | null;
+  groupCreate: ReturnType<typeof useGroupCreate>;
   onRefresh: () => void;
 }) {
   return (
@@ -56,6 +59,26 @@ export function DeviceToolbar({
           disabled={!view.active}
         >
           Clear filters
+        </button>
+      </div>
+      <div className="join">
+        <button
+          type="button"
+          className="btn btn-outline btn-sm join-item"
+          onClick={groupCreate.createRoom}
+          disabled={loading || groupCreate.creating}
+        >
+          <PlusIcon />
+          Create room
+        </button>
+        <button
+          type="button"
+          className="btn btn-outline btn-sm join-item"
+          onClick={groupCreate.createZone}
+          disabled={loading || groupCreate.creating}
+        >
+          <PlusIcon />
+          Create zone
         </button>
       </div>
       {pending && <PendingControls pending={pending} />}

@@ -3,11 +3,15 @@
 import { useId, useState } from "react";
 import type { EditRequest } from "../lib/devices/edits";
 import { NAME_LIMIT } from "../lib/devices/edits";
+import {
+  promptRoomCreate,
+  promptZoneCreate,
+} from "../lib/devices/group-prompts";
+import type { RoomCreate, ZoneCreate } from "../lib/devices/group-create";
 import type { DeviceRow, GroupOption } from "../lib/devices/types";
 import { CloseIcon } from "./icons";
+import { NEW_ROOM, RoomPicker, UNASSIGNED } from "./room-picker";
 import { ZoneChecklist } from "./zone-checklist";
-
-const UNASSIGNED = "";
 
 export function DeviceEditModal({
   row,
@@ -27,8 +31,9 @@ export function DeviceEditModal({
   const [name, setName] = useState(row.name);
   const [roomId, setRoomId] = useState(row.roomId ?? UNASSIGNED);
   const [zoneIds, setZoneIds] = useState<string[]>(row.zoneIds);
+  const [newRoom, setNewRoom] = useState<RoomCreate | null>(null);
+  const [newZones, setNewZones] = useState<ZoneCreate[]>([]);
   const titleId = useId();
-  // Zones hold light services, so a switch or sensor cannot belong to one.
   const zonesAllowed = row.light !== null;
 
   const toggleZone = (id: string) =>
@@ -37,6 +42,17 @@ export function DeviceEditModal({
         ? current.filter((zone) => zone !== id)
         : [...current, id],
     );
+  const createRoom = () => {
+    const room = promptRoomCreate();
+    if (!room) return;
+    setNewRoom(room);
+    setRoomId(NEW_ROOM);
+  };
+  const createZone = () => {
+    const zone = promptZoneCreate();
+    if (!zone) return;
+    setNewZones((current) => [...current, zone]);
+  };
 
   return (
     <dialog className="modal modal-open" aria-labelledby={titleId}>
@@ -51,10 +67,14 @@ export function DeviceEditModal({
           className="flex flex-col gap-4"
           onSubmit={(event) => {
             event.preventDefault();
+            const roomEdit =
+              roomId === NEW_ROOM && newRoom
+                ? { createRoom: newRoom }
+                : { roomId: roomId === UNASSIGNED ? null : roomId };
             onSave(row, {
               name,
-              roomId: roomId === UNASSIGNED ? null : roomId,
-              ...(zonesAllowed ? { zoneIds } : {}),
+              ...roomEdit,
+              ...(zonesAllowed ? { zoneIds, createZones: newZones } : {}),
             });
           }}
         >
@@ -73,29 +93,29 @@ export function DeviceEditModal({
             </p>
           </fieldset>
 
-          <fieldset className="fieldset" disabled={saving}>
-            <legend className="fieldset-legend">Room</legend>
-            <select
-              className="select w-full"
-              value={roomId}
-              onChange={(event) => setRoomId(event.target.value)}
-            >
-              <option value={UNASSIGNED}>Unassigned</option>
-              {rooms.map((room) => (
-                <option key={room.id} value={room.id}>
-                  {room.name}
-                </option>
-              ))}
-            </select>
-            <p className="label">A device belongs to at most one room.</p>
+          <fieldset disabled={saving} className="contents">
+            <RoomPicker
+              rooms={rooms}
+              roomId={roomId}
+              newRoom={newRoom}
+              onChange={setRoomId}
+              onCreate={createRoom}
+            />
           </fieldset>
 
           <ZoneChecklist
             zones={zones}
             selected={zoneIds}
+            created={newZones}
             allowed={zonesAllowed}
             disabled={saving}
             onToggle={toggleZone}
+            onCreate={createZone}
+            onRemoveCreated={(index) =>
+              setNewZones((current) =>
+                current.filter((_, itemIndex) => itemIndex !== index),
+              )
+            }
           />
 
           <div className="modal-action">
