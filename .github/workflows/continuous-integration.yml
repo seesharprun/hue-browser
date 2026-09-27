@@ -4,6 +4,8 @@ on:
   pull_request:
   push:
     branches: [main]
+permissions:
+  contents: read
 jobs:
   validate:
     name: Lint and build the application
