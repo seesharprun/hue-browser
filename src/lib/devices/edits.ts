@@ -124,8 +124,8 @@ export function planEdits(resources: unknown[], edit: EditRequest): Update[] {
         "This device has no light, so it cannot join a zone.",
       );
     }
+    if (!light) return updates;
     for (const zone of zones) {
-      if (!light) continue;
       const has = zone.children.includes(light);
       const should = wanted.has(zone.id);
       if (has === should) continue;
@@ -138,7 +138,7 @@ export function planEdits(resources: unknown[], edit: EditRequest): Update[] {
     }
     for (const zone of edit.createZones ?? []) {
       updates.push(
-        createGroupUpdate({ type: "zone", ...zone, lightId: light as string }),
+        createGroupUpdate({ type: "zone", ...zone, lightId: light }),
       );
     }
   }

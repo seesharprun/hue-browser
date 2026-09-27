@@ -27,9 +27,11 @@ export async function POST(request: Request) {
       const type =
         isRecord(body) && isRecord(body.group) ? body.group.type : "";
       throw new BridgeError(
-        type === "zone"
-          ? `Enter a zone name of ${NAME_LIMIT} characters or fewer.`
-          : `Enter a room name of ${NAME_LIMIT} characters or fewer and a valid room archetype.`,
+        type !== "room" && type !== "zone"
+          ? "Choose whether to create a room or a zone."
+          : type === "zone"
+            ? `Enter a zone name of ${NAME_LIMIT} characters or fewer.`
+            : `Enter a room name of ${NAME_LIMIT} characters or fewer and a valid room archetype.`,
         400,
       );
     }

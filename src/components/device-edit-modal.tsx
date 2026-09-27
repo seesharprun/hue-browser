@@ -71,13 +71,12 @@ export function DeviceEditModal({
           onSubmit={(event) => {
             event.preventDefault();
             const roomEdit =
-              roomId === NEW_ROOM && newRoom
-                ? { createRoom: newRoom }
+              roomId === NEW_ROOM
+                ? newRoom
+                  ? { createRoom: newRoom }
+                  : {}
                 : {
-                    roomId:
-                      roomId === UNASSIGNED || roomId === NEW_ROOM
-                        ? null
-                        : roomId,
+                    roomId: roomId === UNASSIGNED ? null : roomId,
                   };
             onSave(row, {
               name,
