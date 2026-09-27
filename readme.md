@@ -88,36 +88,36 @@ The application icon lives in `src/app/icon.svg`. The documentation commands and
 The browser keeps each person's paired bridge details and application keys in local storage. The Next.js API routes use those credentials only for the requested operation, then the server verifies the bridge certificate and identity before communicating with the bridge. Device resources are parsed into rows and returned to the interface as JSON.
 
 ```mermaid
-flowchart LR
+flowchart TB
     subgraph browser["Browser"]
         user["User"]
-        ui["React and daisyUI interface"]
+        ui["React and daisyUI"]
         storage[("Browser localStorage")]
         user --> ui
-        ui -->|"Save or forget paired bridges"| storage
-        storage -->|"Bridge IDs, addresses, and application keys"| ui
+        ui -->|"Save or forget"| storage
+        storage -->|"Bridge IDs, addresses, keys"| ui
     end
 
     subgraph app["Hue Browser container"]
         routes["Next.js API routes"]
-        transport["Verified Node.js HTTPS transport"]
+        transport["Verified HTTPS transport"]
         parser["CLIP v2 resource parser"]
-        ca[("Bundled Philips Hue bridge root CA")]
-        routes -->|"Bridge operation"| transport
+        ca[("Philips Hue bridge root CA")]
+        routes -->|"Bridge request"| transport
         transport -->|"Device resources"| parser
-        parser -->|"Devices, rooms, and zones"| routes
-        transport -.->|"Verify certificate and bridge identity"| ca
+        parser -->|"Devices, rooms, zones"| routes
+        transport -.->|"Verify certificate and identity"| ca
     end
 
     subgraph hue["Philips Hue services"]
-        discovery["Philips Hue online discovery"]
-        bridges["One or more local Philips Hue bridges"]
+        discovery["Online bridge discovery"]
+        bridges["Local Philips Hue bridges"]
     end
 
-    ui -->|"Discover, pair, read, edit, identify, or command"| routes
-    routes -->|"Bridge candidates"| discovery
+    ui -->|"JSON API requests"| routes
+    routes -->|"Discover bridges"| discovery
     discovery -->|"Bridge IDs and addresses"| routes
-    transport -->|"Verified HTTPS; application key when needed"| bridges
+    transport -->|"HTTPS; key when needed"| bridges
     bridges -->|"CLIP v2 responses"| transport
     routes -->|"JSON results"| ui
 ```
