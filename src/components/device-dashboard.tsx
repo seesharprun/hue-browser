@@ -3,13 +3,16 @@
 import { useCallback, useEffect, useState } from "react";
 import type { PairedBridge } from "../lib/bridges/types";
 import { groupId } from "../lib/devices/filtering";
+import { useBulkEdit } from "../lib/devices/use-bulk-edit";
 import { useDeviceCommand } from "../lib/devices/use-command";
 import { useDeviceView } from "../lib/devices/use-device-view";
 import { useDevices } from "../lib/devices/use-devices";
 import { useDeviceEdit } from "../lib/devices/use-edit";
 import { usePendingEdits } from "../lib/devices/use-pending";
+import { useSelection } from "../lib/devices/use-selection";
 import { useToasts } from "../lib/ui/toasts";
 import { BridgeFooter } from "./bridge-footer";
+import { BulkActionBar } from "./bulk-action-bar";
 import { DeviceEditModal } from "./device-edit-modal";
 import { DeviceSkeleton } from "./device-skeleton";
 import { DeviceStats } from "./device-stats";
@@ -26,6 +29,8 @@ export function DeviceDashboard({ bridges }: { bridges: PairedBridge[] }) {
     refresh,
   );
   const pendingEdits = usePendingEdits(bridges, rows, refresh);
+  const selection = useSelection(view.visible);
+  const bulk = useBulkEdit(bridges, groups, refresh);
   const { notify } = useToasts();
   const { focus, clearFocus, group } = view;
 
@@ -75,6 +80,14 @@ export function DeviceDashboard({ bridges }: { bridges: PairedBridge[] }) {
         pending={spreadsheet ? pendingEdits : null}
         onRefresh={refresh}
       />
+      <BulkActionBar
+        rows={selection.rowsIn(view.visible)}
+        catalog={groups}
+        count={selection.count}
+        running={bulk.running}
+        onClear={selection.clear}
+        onRun={(action) => bulk.run(selection.rowsIn(view.visible), action)}
+      />
       {/* Placeholder groups keep the page from collapsing to blank while the
           bridges answer, which otherwise reads as a broken table. */}
       {loading && rows.length === 0 && (
@@ -101,6 +114,7 @@ export function DeviceDashboard({ bridges }: { bridges: PairedBridge[] }) {
               command={command}
               accordion={{ open, toggle }}
               spreadsheet={spreadsheet}
+              selection={selection}
               onEdit={edit}
             />
           ),

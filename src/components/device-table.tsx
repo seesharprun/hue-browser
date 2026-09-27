@@ -1,17 +1,16 @@
 "use client";
 
-import { Fragment } from "react";
 import type { ColumnKey } from "../lib/devices/columns";
 import type { DeviceCommand } from "../lib/devices/commands";
 import { groupId } from "../lib/devices/filtering";
-import type { DeviceRow, GroupOption } from "../lib/devices/types";
+import type { DeviceRow } from "../lib/devices/types";
 import type { DeviceView } from "../lib/devices/use-device-view";
-import type { PendingEdits } from "../lib/devices/use-pending";
+import type { Selection } from "../lib/devices/use-selection";
 import { ColumnHeader } from "./column-header";
-import { DeviceCell } from "./device-cell";
-import { DeviceDetails } from "./device-details";
-import { DeviceEditCell } from "./device-edit-cell";
-import { DeviceRowActions } from "./device-row-actions";
+import { SelectAllCheckbox } from "./device-select-cell";
+import { DeviceTableRow, type Spreadsheet } from "./device-table-row";
+
+export type { Spreadsheet };
 
 type Group = {
   key: string;
@@ -30,18 +29,13 @@ export type Accordion = {
   toggle: (key: string) => void;
 };
 
-/** The flat grouping edits in place, so it supplies the pending-edit store. */
-export type Spreadsheet = {
-  pending: PendingEdits;
-  groups: Record<string, { rooms: GroupOption[]; zones: GroupOption[] }>;
-};
-
 export function DeviceTable({
   group,
   view,
   command,
   accordion,
   spreadsheet,
+  selection,
   onEdit,
 }: {
   group: Group;
@@ -49,6 +43,7 @@ export function DeviceTable({
   command: CommandState;
   accordion: Accordion;
   spreadsheet: Spreadsheet | null;
+  selection: Selection;
   onEdit: (row: DeviceRow) => void;
 }) {
   return (
@@ -70,6 +65,13 @@ export function DeviceTable({
         <table className="table table-zebra whitespace-nowrap">
           <thead>
             <tr>
+              <th scope="col">
+                <SelectAllCheckbox
+                  rows={group.rows}
+                  title={group.title}
+                  selection={selection}
+                />
+              </th>
               {view.visibleColumns.map((item) => (
                 <ColumnHeader
                   key={item.key}
@@ -87,44 +89,19 @@ export function DeviceTable({
           <tbody>
             {group.rows.map((row) => {
               const key = `${row.bridgeId}:${row.id}`;
-              const expanded = accordion.open === key;
-              const catalog = spreadsheet?.groups[row.bridgeId];
               return (
-                <Fragment key={key}>
-                  <tr>
-                    {view.visibleColumns.map((item) => (
-                      <td key={item.key}>
-                        {spreadsheet ? (
-                          <DeviceEditCell
-                            column={item}
-                            row={row}
-                            rooms={catalog?.rooms ?? []}
-                            zones={catalog?.zones ?? []}
-                            pending={spreadsheet.pending}
-                          />
-                        ) : (
-                          <DeviceCell column={item} row={row} view={view} />
-                        )}
-                      </td>
-                    ))}
-                    <td>
-                      <DeviceRowActions
-                        row={row}
-                        command={command}
-                        expanded={expanded}
-                        editable={!spreadsheet}
-                        onToggle={() => accordion.toggle(key)}
-                        onEdit={() => onEdit(row)}
-                      />
-                    </td>
-                  </tr>
-                  {expanded && (
-                    <DeviceDetails
-                      row={row}
-                      span={view.visibleColumns.length + 1}
-                    />
-                  )}
-                </Fragment>
+                <DeviceTableRow
+                  key={key}
+                  row={row}
+                  rows={group.rows}
+                  view={view}
+                  command={command}
+                  expanded={accordion.open === key}
+                  spreadsheet={spreadsheet}
+                  selection={selection}
+                  onToggle={() => accordion.toggle(key)}
+                  onEdit={() => onEdit(row)}
+                />
               );
             })}
           </tbody>
