@@ -127,3 +127,33 @@ testDevices("maps devices to rooms, zones, and identifying details", () => {
     /invalid zone data/i,
   );
 });
+
+testDevices("leaves the bridge itself out of the device list", () => {
+  const response = {
+    errors: [],
+    data: [
+      {
+        id: "bridge-device-1",
+        type: "device",
+        metadata: { name: "Hue Bridge", archetype: "bridge_v2" },
+        product_data: { product_name: "Hue Bridge", model_id: "BSB002" },
+        services: [
+          { rid: "bridge-1", rtype: "bridge" },
+          { rid: "zigbee-1", rtype: "zigbee_connectivity" },
+        ],
+      },
+      {
+        id: "light-1",
+        type: "device",
+        metadata: { name: "Pendant", archetype: "pendant_round" },
+        product_data: { product_name: "Hue bulb", model_id: "LCT001" },
+        services: [{ rid: "a", rtype: "light" }],
+      },
+    ],
+  };
+  const result = deviceRows(response, "bridge-1", "Home");
+  deviceAssert.deepEqual(
+    result.devices.map((row) => row.id),
+    ["light-1"],
+  );
+});

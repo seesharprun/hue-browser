@@ -32,14 +32,21 @@ export function HomeContent() {
   // applies, so an unreachable step falls back to the start.
   const current = steps[stage].enabled ? stage : CONNECT;
 
+  // The spreadsheet is wide, so the device view fills the window rather than
+  // sitting in a centred column that pushes the action menu off screen.
+  const frame =
+    current === DEVICES
+      ? "w-full px-4 md:px-6"
+      : "mx-auto w-full max-w-7xl px-4 md:px-6";
+
   return (
     <main className="grow">
       {current === CONNECT && <RoomGlow />}
-      <div className="mx-auto w-full max-w-7xl px-4 pt-8 md:px-6">
+      <div className={`${frame} pt-8`}>
         <WizardSteps steps={steps} current={current} onGo={setStage} />
       </div>
       {current === DEVICES ? (
-        <div className="mx-auto w-full max-w-7xl px-4 py-8 md:px-6">
+        <div className={`${frame} py-8`}>
           <div className="mb-6">
             <h1 className="font-display text-3xl">Devices</h1>
             <p className="text-sm text-base-content/70">
