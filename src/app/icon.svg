@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Pendant lamp</title>
+  <rect width="64" height="64" rx="13" fill="#141a2e"/>
+  <path d="M32 7v20" stroke="#3c4468" stroke-width="3"/>
+  <path d="M32 25 45 41H19Z" fill="#5d5470"/>
+  <rect x="18" y="40" width="28" height="4" rx="2" fill="#e8b072"/>
+  <circle cx="32" cy="48" r="4" fill="#f0c489"/>
+  <path d="m27 53-5 10h20l-5-10" fill="#e8b072" opacity=".16"/>
+</svg>
