@@ -95,8 +95,14 @@ const count = (value: number, singular: string) =>
 
 export function resultSummary(results: MigrationResult[]) {
   const moved = results.filter((item) => item.status === "moved").length;
-  const failed = results.length - moved;
-  return failed
-    ? `Moved ${count(moved, "device")}; ${count(failed, "device")} need attention.`
-    : `Moved ${count(moved, "device")}.`;
+  const failed = results.filter((item) => item.status === "failed").length;
+  const skipped = results.filter((item) => item.status === "skipped").length;
+  if (!failed && !skipped) return `Moved ${count(moved, "device")}.`;
+  return [
+    `Moved ${count(moved, "device")}`,
+    failed ? `${count(failed, "device")} failed` : "",
+    skipped ? `${count(skipped, "device")} skipped` : "",
+  ]
+    .filter(Boolean)
+    .join("; ");
 }

@@ -100,6 +100,7 @@ export function planMigration(resources: unknown[], request: MigrationRequest) {
   const rtype = request.groupType === "room" ? "device" : "light";
   const sourceChildren = [...source.children];
   const destinationChildren = destination ? [...destination.children] : null;
+  const destinationId = destination?.id;
   const planned: PlannedDevice[] = [];
 
   for (const member of [...source.children]) {
@@ -122,10 +123,14 @@ export function planMigration(resources: unknown[], request: MigrationRequest) {
       path: `/clip/v2/resource/${request.groupType}/${source.id}`,
       body: { children: refs(sourceChildren, rtype) },
     });
-    if (destinationChildren && !destinationChildren.includes(rid)) {
+    if (
+      destinationId &&
+      destinationChildren &&
+      !destinationChildren.includes(rid)
+    ) {
       destinationChildren.push(rid);
       updates.push({
-        path: `/clip/v2/resource/${request.groupType}/${destination?.id}`,
+        path: `/clip/v2/resource/${request.groupType}/${destinationId}`,
         body: { children: refs(destinationChildren, rtype) },
       });
     }

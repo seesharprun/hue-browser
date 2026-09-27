@@ -37,6 +37,10 @@ export async function POST(request: Request) {
       );
     }
 
+    if (body.preview !== undefined && typeof body.preview !== "boolean") {
+      throw new BridgeError("Preview must be true or false.", 400);
+    }
+
     const resources = readResources(
       await getBridgeResources(address, id, applicationKey),
     );

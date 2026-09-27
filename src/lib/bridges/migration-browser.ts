@@ -2,7 +2,7 @@ import type {
   MigrationDevice,
   MigrationRequest,
   MigrationResult,
-} from "../devices/migrations";
+} from "../devices/migrations.ts";
 import { isRecord } from "./storage";
 import type { PairedBridge } from "./types";
 

@@ -53,6 +53,7 @@ export function useMigrationState(
     setSource: (value: string) => {
       reset();
       setSourceId(value);
+      setDestination(emptyValue);
     },
     setDestination: (value: string) => {
       reset();
