@@ -4,6 +4,9 @@ on:
   pull_request:
   push:
     branches: [main]
+# Validation only reads the repository, so restrict the default token to that.
+permissions:
+  contents: read
 jobs:
   validate:
     name: Lint and build the application
