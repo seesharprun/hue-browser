@@ -89,8 +89,8 @@ The application layers a React interface over an API layer that handles all brid
 
 ```mermaid
 flowchart TD
-    A[Browser UI<br/>React and daisyUI] --> B[API layer<br/>Next.js route handlers]
-    B --> C[Philips Hue REST API<br/>local bridges]
+    A["Browser UI<br/>React and daisyUI"] --> B["API layer<br/>Next.js route handlers"]
+    B --> C["Philips Hue REST API<br/>local bridges"]
 ```
 
 ## Attribution
@@ -114,4 +114,4 @@ Hue Browser is built on the work of these projects.
 
 ## License
 
-Hue Browser is released under the MIT License.
+Hue Browser is released under the [MIT License](LICENSE).
