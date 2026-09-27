@@ -1,0 +1,56 @@
+name: Continuous integration
+# Validate every pull request, and the default branch after merge.
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  validate:
+    name: Lint and build the application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+      # Match the Node version used for local development and in the image.
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Check formatting and lint rules
+        run: npm run lint
+      # The build also type checks the project.
+      - name: Build the application
+        run: npm run build
+  container:
+    name: Build the container image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+      # Confirm the image still builds. Publishing happens in the continuous
+      # deployment workflow.
+      - name: Build the container image without publishing
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: false
+  documentation:
+    name: Build the documentation site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      # Confirm the documentation still builds. Publishing happens in the
+      # continuous deployment workflow.
+      - name: Build the documentation site
+        run: npm run docs:build

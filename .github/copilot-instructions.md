@@ -8,6 +8,8 @@ This repository is a web-based React application for managing residential Philip
 - Use TypeScript for application and tooling code.
 - Use Tailwind CSS for styling.
 - Use daisyUI for UI components and design primitives.
+- Follow the [lo-fi art](https://trends.daisyui.com/trend/lo-fi-art/) visual style. Balance dusty indigo, muted blue, mauve, and soft teal night tones against localized amber, peach, or pink light from lamps, screens, and windows. Use warm lamp amber or peach for `primary`, dusty indigo or soft teal for `secondary`, and step `base-100`, `base-200`, and `base-300` through muted night blue, deep mauve-blue, and dark indigo. This style is not monochrome, and it is distinct from the daisyUI theme that happens to be named `lofi`.
+- Match documentation images and other artwork to the lo-fi art palette rather than drawing them in black and white.
 - Use Biome for linting and formatting, configured through CLI flags in `package.json` scripts so no Biome configuration file is needed. Do not use ESLint, which cannot lint TypeScript without a configuration file.
 - Use Playwright to capture screenshots for documentation.
 - Prefer established components and libraries over custom implementations.
@@ -36,9 +38,12 @@ This repository is a web-based React application for managing residential Philip
 - Write at least one sentence of explanation under every heading before any list, table, or code block. Never leave a heading bare.
 - Express the project's architecture or stack as a Mermaid diagram rather than a plain list.
 - Write documentation under `docs` for users who may not be technically savvy beyond downloading a Docker container and using the app.
+- The documentation site is published to a project subpath on GitHub Pages, so its assets are linked with a base path prefix. Preview a build with the documentation tool's own preview command, which applies that base path. Serving the build output directly from a static file server requests assets at the wrong location and makes the site appear unstyled.
+- Write documentation pages as Markdown (`.md`) rather than MDX, since the documentation does not use component features.
+- Store documentation images and other media under `docs/media`.
 - Add explanatory comments to infrastructure files such as Dockerfiles and workflows, where the reasoning behind each step is not obvious.
 - Include an attribution section in `readme.md` that links every toolchain, library, and package used to build the project, presented as a table. Link to each project's home page first, its documentation page if it has no home page, its package manager page if it has neither, and its GitHub repository as a last resort.
-- Update the readme and documentation as part of each increment rather than deferring it.
+- Update the readme and documentation at the end of every increment, before suggesting a commit message. Treat documentation as part of the increment rather than a follow-up task.
 
 ## Writing style
 
@@ -57,6 +62,11 @@ This repository is a web-based React application for managing residential Philip
 ## Automation and distribution
 
 - Build a GitHub Actions continuous integration workflow that automatically validates pull requests and installs Node dependencies with `npm ci`.
+- Name workflow files with their role fully spelled out in kebab case, using `continuous-integration.yml` for continuous integration and a `continuous-deployment-` prefix for each deployment target, such as `continuous-deployment-container.yml` and `continuous-deployment-docs.yml`. Use the word "deployment" rather than "delivery", and never abbreviate to `ci` or `cd` in either the file name or the workflow `name` field.
+- Reference every GitHub Action by its latest major version tag, such as `v7`, rather than pinning to a commit SHA or a full version. Check the action's current latest release before writing or updating a workflow rather than assuming a version.
+- Split a continuous deployment workflow that targets an environment into two jobs: one that builds and uploads the artifact, and one that deploys it to the environment.
+- Do not put blank lines inside workflow files. Keep each workflow as a single unbroken block of YAML, using comments rather than blank lines to separate sections.
+- Give every workflow, job, and step an explicit, fully spelled out `name`. Never leave a step unnamed or rely on an abbreviation.
 - Keep deeper project documentation under `docs`, using Blume when practical to keep the documentation setup simple.
 - Deploy `docs` automatically from the default branch to a GitHub Pages environment.
 - For containerized applications, automatically publish public container packages through GitHub Packages and make releases available through GitHub Releases.

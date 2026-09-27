@@ -7,3 +7,6 @@ Dockerfile
 .dockerignore
 tsconfig.json
 next-env.d.ts
+dist
+.blume
+blume.config.ts
