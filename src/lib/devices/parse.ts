@@ -1,28 +1,14 @@
-import type { DeviceRow, LightService } from "./types";
+import {
+  collectGroups,
+  DeviceDataError,
+  isRecord,
+  readResources,
+  reference,
+  text,
+} from "./groups.ts";
+import type { BridgeDevices, DeviceRow, LightService } from "./types";
 
-export class DeviceDataError extends Error {}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-const text = (value: unknown) => (typeof value === "string" ? value : "");
-const reference = (value: unknown): string | null =>
-  isRecord(value) && typeof value.rid === "string" ? value.rid : null;
-
-type Group = { name: string; children: string[] };
-
-function group(item: Record<string, unknown>, label: string): Group {
-  if (!isRecord(item.metadata) || !Array.isArray(item.children)) {
-    throw new DeviceDataError(`The bridge returned invalid ${label} data.`);
-  }
-  return {
-    name: text(item.metadata.name) || `Unnamed ${label}`,
-    children: item.children
-      .map(reference)
-      .filter((id): id is string => id !== null),
-  };
-}
+export { DeviceDataError };
 
 function device(item: Record<string, unknown>) {
   if (
@@ -52,34 +38,19 @@ export function deviceRows(
   value: unknown,
   bridgeId: string,
   bridgeName: string,
-): DeviceRow[] {
-  if (
-    !isRecord(value) ||
-    !Array.isArray(value.data) ||
-    !Array.isArray(value.errors)
-  ) {
-    throw new DeviceDataError("The bridge returned invalid resource data.");
+): BridgeDevices {
+  const resources = readResources(value);
+  const roomGroups = collectGroups(resources, "room");
+  const zoneGroups = collectGroups(resources, "zone");
+  const rooms = new Map<string, { id: string; name: string }>();
+  for (const room of roomGroups) {
+    for (const child of room.children)
+      rooms.set(child, { id: room.id, name: room.name });
   }
-  if (value.errors.length) {
-    throw new DeviceDataError(
-      "The bridge could not list all resources. Check its connection and application key.",
-    );
-  }
-  const resources: unknown[] = value.data;
-  const rooms = new Map<string, string>();
-  const zones: Group[] = [];
   const macs = new Map<string, string>();
   const lights = new Map<string, LightService>();
   for (const item of resources) {
-    if (!isRecord(item) || typeof item.type !== "string") {
-      throw new DeviceDataError("The bridge returned invalid resource data.");
-    }
-    if (item.type === "room") {
-      const room = group(item, "room");
-      for (const child of room.children) rooms.set(child, room.name);
-    }
-    // A zone lists the services it contains rather than whole devices.
-    if (item.type === "zone") zones.push(group(item, "zone"));
+    if (!isRecord(item)) continue;
     // Only the Zigbee service reports a device's MAC address.
     if (item.type === "zigbee_connectivity") {
       const owner = reference(item.owner);
@@ -104,6 +75,7 @@ export function deviceRows(
   for (const item of resources) {
     if (!isRecord(item) || item.type !== "device") continue;
     const parsed = device(item);
+    const room = rooms.get(parsed.id);
     const row: DeviceRow = {
       id: parsed.id,
       bridgeId,
@@ -112,8 +84,10 @@ export function deviceRows(
       product: text(parsed.product.product_name) || "Unknown product",
       model: text(parsed.product.model_id) || "Unknown",
       type: text(parsed.metadata.archetype) || "unknown",
-      room: rooms.get(parsed.id) ?? "Unassigned",
+      room: room?.name ?? "Unassigned",
+      roomId: room?.id ?? null,
       zones: [],
+      zoneIds: [],
       services: [
         ...new Set(
           parsed.services.map((service) => text(service.rtype)).filter(Boolean),
@@ -132,12 +106,23 @@ export function deviceRows(
     owners.set(parsed.id, row);
     devices.push(row);
   }
-  for (const zone of zones) {
+  for (const zone of zoneGroups) {
     for (const child of zone.children) {
       const row = owners.get(child);
-      if (row && !row.zones.includes(zone.name)) row.zones.push(zone.name);
+      if (row && !row.zones.includes(zone.name)) {
+        row.zones.push(zone.name);
+        row.zoneIds.push(zone.id);
+      }
     }
   }
   for (const row of devices) row.zones.sort((a, b) => a.localeCompare(b));
-  return devices;
+  const options = (groups: { id: string; name: string }[]) =>
+    groups
+      .map(({ id, name }) => ({ id, name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  return {
+    devices,
+    rooms: options(roomGroups),
+    zones: options(zoneGroups),
+  };
 }

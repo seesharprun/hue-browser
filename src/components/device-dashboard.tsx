@@ -6,8 +6,11 @@ import { groupId } from "../lib/devices/filtering";
 import { useDeviceCommand } from "../lib/devices/use-command";
 import { useDeviceView } from "../lib/devices/use-device-view";
 import { useDevices } from "../lib/devices/use-devices";
+import { useDeviceEdit } from "../lib/devices/use-edit";
+import { usePendingEdits } from "../lib/devices/use-pending";
 import { useToasts } from "../lib/ui/toasts";
 import { BridgeFooter } from "./bridge-footer";
+import { DeviceEditModal } from "./device-edit-modal";
 import { DeviceSkeleton } from "./device-skeleton";
 import { DeviceStats } from "./device-stats";
 import { DeviceTable } from "./device-table";
@@ -15,11 +18,20 @@ import { DeviceToolbar } from "./device-toolbar";
 import { ViewFab } from "./view-fab";
 
 export function DeviceDashboard({ bridges }: { bridges: PairedBridge[] }) {
-  const { rows, errors, loading, refresh } = useDevices(bridges);
+  const { rows, groups, errors, loading, refresh } = useDevices(bridges);
   const view = useDeviceView(rows);
   const command = useDeviceCommand(bridges);
+  const { editing, edit, close, save, saving } = useDeviceEdit(
+    bridges,
+    refresh,
+  );
+  const pendingEdits = usePendingEdits(bridges, rows, refresh);
   const { notify } = useToasts();
-  const { focus, clearFocus } = view;
+  const { focus, clearFocus, group } = view;
+
+  // The flat grouping is the spreadsheet; the grouped views use the modal.
+  const spreadsheet =
+    group === "none" ? { pending: pendingEdits, groups } : null;
 
   // One details panel at a time keeps the table readable while comparing rows.
   const [open, setOpen] = useState("");
@@ -57,7 +69,12 @@ export function DeviceDashboard({ bridges }: { bridges: PairedBridge[] }) {
         bridges={bridges.length}
         loading={loading && rows.length === 0}
       />
-      <DeviceToolbar view={view} loading={loading} onRefresh={refresh} />
+      <DeviceToolbar
+        view={view}
+        loading={loading}
+        pending={spreadsheet ? pendingEdits : null}
+        onRefresh={refresh}
+      />
       {/* Placeholder groups keep the page from collapsing to blank while the
           bridges answer, which otherwise reads as a broken table. */}
       {loading && rows.length === 0 && (
@@ -83,8 +100,22 @@ export function DeviceDashboard({ bridges }: { bridges: PairedBridge[] }) {
               view={view}
               command={command}
               accordion={{ open, toggle }}
+              spreadsheet={spreadsheet}
+              onEdit={edit}
             />
           ),
+      )}
+      {editing && (
+        <DeviceEditModal
+          // Remounting per device resets the form to that device's values.
+          key={`${editing.bridgeId}:${editing.id}`}
+          row={editing}
+          rooms={groups[editing.bridgeId]?.rooms ?? []}
+          zones={groups[editing.bridgeId]?.zones ?? []}
+          saving={saving}
+          onCancel={close}
+          onSave={save}
+        />
       )}
       {rows.length > 0 && <ViewFab view={view} />}
       <BridgeFooter bridges={bridges} rows={rows} />

@@ -1,5 +1,6 @@
 import type { DeviceCommand } from "../devices/commands";
-import type { DeviceRow } from "../devices/types";
+import type { EditRequest } from "../devices/edits";
+import type { BridgeDevices, DeviceRow, GroupOption } from "../devices/types";
 import { isBridge, isPairedBridge, isRecord } from "./storage";
 import type { Bridge, BridgeCandidate, PairedBridge } from "./types";
 
@@ -69,43 +70,81 @@ export async function sendCommand(
   });
 }
 
-export async function loadDevices(bridge: PairedBridge): Promise<DeviceRow[]> {
+export async function editDevice(
+  bridge: PairedBridge,
+  edit: EditRequest,
+): Promise<void> {
+  await callApi("edit", {
+    address: bridge.address,
+    id: bridge.id,
+    applicationKey: bridge.applicationKey,
+    edit,
+  });
+}
+
+const STRING_FIELDS =
+  "id name product model type room manufacturer software hardware mac".split(
+    " ",
+  );
+
+function isDeviceRow(row: unknown, bridgeId: string) {
+  return (
+    isRecord(row) &&
+    row.bridgeId === bridgeId &&
+    STRING_FIELDS.every((field) => typeof row[field] === "string") &&
+    (row.roomId === null || typeof row.roomId === "string") &&
+    isStrings(row.zones) &&
+    isStrings(row.zoneIds) &&
+    isStrings(row.services) &&
+    (row.light === null ||
+      (isRecord(row.light) &&
+        typeof row.light.id === "string" &&
+        typeof row.light.on === "boolean" &&
+        typeof row.light.color === "boolean"))
+  );
+}
+
+function isStrings(value: unknown): value is string[] {
+  return (
+    Array.isArray(value) && value.every((item) => typeof item === "string")
+  );
+}
+
+function isGroupOptions(value: unknown): value is GroupOption[] {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (item: unknown) =>
+        isRecord(item) &&
+        typeof item.id === "string" &&
+        typeof item.name === "string",
+    )
+  );
+}
+
+export async function loadDevices(
+  bridge: PairedBridge,
+): Promise<BridgeDevices> {
   const value = await callApi("devices", {
     address: bridge.address,
     id: bridge.id,
     applicationKey: bridge.applicationKey,
   });
   if (
-    !Array.isArray(value) ||
-    !value.every(
-      (row: unknown) =>
-        isRecord(row) &&
-        typeof row.id === "string" &&
-        row.bridgeId === bridge.id &&
-        typeof row.name === "string" &&
-        typeof row.product === "string" &&
-        typeof row.model === "string" &&
-        typeof row.type === "string" &&
-        typeof row.room === "string" &&
-        typeof row.manufacturer === "string" &&
-        typeof row.software === "string" &&
-        typeof row.hardware === "string" &&
-        typeof row.mac === "string" &&
-        Array.isArray(row.zones) &&
-        row.zones.every((zone: unknown) => typeof zone === "string") &&
-        Array.isArray(row.services) &&
-        row.services.every((service: unknown) => typeof service === "string") &&
-        (row.light === null ||
-          (isRecord(row.light) &&
-            typeof row.light.id === "string" &&
-            typeof row.light.on === "boolean" &&
-            typeof row.light.color === "boolean")),
-    )
+    !isRecord(value) ||
+    !Array.isArray(value.devices) ||
+    !value.devices.every((row: unknown) => isDeviceRow(row, bridge.id)) ||
+    !isGroupOptions(value.rooms) ||
+    !isGroupOptions(value.zones)
   ) {
     throw new Error("The device response was invalid.");
   }
-  return value.map((row: DeviceRow) => ({
-    ...row,
-    bridgeName: bridge.name ?? bridge.address,
-  }));
+  return {
+    devices: (value.devices as DeviceRow[]).map((row) => ({
+      ...row,
+      bridgeName: bridge.name ?? bridge.address,
+    })),
+    rooms: value.rooms,
+    zones: value.zones,
+  };
 }

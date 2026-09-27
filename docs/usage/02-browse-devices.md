@@ -55,10 +55,36 @@ The menu only offers the controls the device supports. A device without a light 
 
 These controls send a single command each and do not change scenes, schedules, or automations stored on the bridge.
 
+## Edit one device
+
+Renaming a device, moving it to another room, and changing which zones it belongs to all happen in one place, because a bridge stores those three fields on the same device.
+
+In the **Rooms** and **Zones** groupings, select **Edit** at the end of a row to open the edit dialog.
+
+1. Enter a **Name** of 32 characters or fewer. Philips Hue rejects longer names.
+2. Choose a **Room**. A device belongs to at most one room; choose **Unassigned** to remove it from its current room.
+3. Select the **Zones** the device belongs to. A device may belong to any number of zones, or none.
+4. Select **Save changes** to send the edit, or **Cancel** to discard it.
+
+Only devices with a light can join a zone, because Hue zones group light services rather than whole devices. For a switch or sensor, the zone list is disabled and the dialog explains why.
+
+## Edit many devices in the flat view
+
+The **Flat** grouping is the spreadsheet. It is built for data entry, so its name, room, and zone cells are always editable and nothing is sent to a bridge until you say so.
+
+1. Switch to the **Flat** grouping using the button at the bottom right of the page.
+2. Edit the **Name**, **Room**, and **Zones** cells directly in the table. Changes are held in the browser.
+3. A marker appears beside every cell that differs from the bridge, and the count beside **Save changes** shows how many devices are waiting.
+4. Select **Save changes** to send every pending device, or **Discard** to drop them all and return to the values on the bridge.
+
+Editing a cell back to its original value clears its pending mark automatically. **Save changes** stays disabled while any pending name is empty or too long.
+
+Devices are saved one at a time, and the bridge has no way to apply them as a single transaction. If one device fails, the devices saved before it keep their changes, and the failures are reported by name so you can retry them.
+
 ## Search and refresh
 
 Search and refresh work across every paired bridge at once.
 
 Use the search box to match a device name, product, model, room, zone, bridge, or capability. The dashboard loads devices when it opens and when you change paired bridges; select **Refresh** to pick up changes made elsewhere. While devices load, animated placeholder rows stand in for the table. If one bridge cannot be reached or rejects its application key, its error appears above the table while devices from other bridges remain visible. Check its network connection or pair it again if the key was revoked.
 
-This iteration adds identify and test controls only. Renaming devices and reassigning rooms will arrive in a later iteration.
+Pending edits in the flat view are kept when you refresh, so a refresh will not lose work in progress.

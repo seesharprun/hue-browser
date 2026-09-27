@@ -35,12 +35,18 @@ This repository is a web-based React application for managing residential Philip
 - Keep each source file at or below 150 lines. When a file approaches this limit, split it along clear responsibility boundaries.
 - Prefer convention-based defaults over custom configuration, even when a default is slightly less convenient. Keep configuration files out of the repository root unless a tool genuinely cannot work without one. Verify that a configuration file is required before adding it, rather than assuming.
 - Minimize configuration files and avoid boilerplate unless it is required.
-- Let generated files stay generated. Add files such as `tsconfig.json` and `next-env.d.ts` to `.gitignore` rather than committing them.
+- Let generated files stay generated. Add files such as `next-env.d.ts` to `.gitignore` rather than committing them.
+- Commit `tsconfig.json`. Next.js regenerates it when it is missing, but it also carries compiler options the build and the test runner depend on, and a regenerated file silently drops them. Keep the committed file limited to the options Next.js writes plus the ones the project genuinely needs.
 - Add a focused `.gitignore` file when generated files make it useful.
 - Keep `package.json` minimal: include only necessary scripts, dependencies, and metadata.
 - Prefer structured GitHub issue templates over allowing blank issues.
 - Prefer library or framework components over rebuilding common behavior from scratch.
 - Prefer the simplest UX implementation and the fewest practical utility classes. Use daisyUI abstractions when they reduce Tailwind class lists.
+- Build rows of related controls as a daisyUI [`join`](https://daisyui.com/components/join/) of [`button`](https://daisyui.com/components/button/) elements, so they read as one segmented control. Keep only `join-item` buttons inside the `join`, because `join` squares off the corners of every child between the first and the last. Render attached popovers, menus, and dialogs as siblings of the `join`.
+- Give action buttons both an icon and a short text label.
+- Never save edits automatically. Collect changes locally, mark each changed value with a daisyUI [`indicator`](https://daisyui.com/components/indicator/), and require an explicit save. Offer a way to discard pending changes, and disable saving while any pending value is invalid.
+- Treat the flat, ungrouped table as a spreadsheet: its editable columns are always live inputs, and edits accumulate across rows until one save commits them. Grouped views edit a single record through a modal instead.
+- Keep a conditional wrapper element mounted rather than adding it on first edit. Swapping between a bare child and a wrapped one remounts the subtree, which drops the caret from an input and closes an open popover.
 - Keep the overall project and dependency footprint small, even when that means accepting less customization or a less unique design.
 - Avoid adding abstractions, dependencies, files, or configuration for hypothetical future needs.
 

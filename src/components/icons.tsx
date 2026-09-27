@@ -39,6 +39,16 @@ const WARNING =
   "M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z";
 const ERROR = "M15 9l-6 6m0-6 6 6M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z";
 const SUCCESS = "m8 12.5 2.7 2.7L16 9.8M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z";
+const EDIT = "M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Zm10-13 4 4";
+const SAVE = "m5 13 4 4L19 7";
+
+export function SaveIcon() {
+  return <Icon label="Save" path={SAVE} size="size-[14px]" />;
+}
+
+export function EditIcon() {
+  return <Icon label="Edit" path={EDIT} size="size-[14px]" />;
+}
 
 export function TestIcon() {
   return <Icon label="Test" path={BULB} size="size-[14px]" />;

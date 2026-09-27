@@ -1,15 +1,19 @@
 "use client";
 
 import type { DeviceView } from "../lib/devices/use-device-view";
-import { RefreshIcon } from "./icons";
+import type { PendingEdits } from "../lib/devices/use-pending";
+import { RefreshIcon, SaveIcon } from "./icons";
 
 export function DeviceToolbar({
   view,
   loading,
+  pending,
   onRefresh,
 }: {
   view: DeviceView;
   loading: boolean;
+  /** Only the flat grouping collects pending edits. */
+  pending: PendingEdits | null;
   onRefresh: () => void;
 }) {
   return (
@@ -52,6 +56,52 @@ export function DeviceToolbar({
           disabled={!view.active}
         >
           Clear filters
+        </button>
+      </div>
+      {pending && <PendingControls pending={pending} />}
+    </div>
+  );
+}
+
+/** The badge counts rows waiting to reach the bridge. */
+function PendingControls({ pending }: { pending: PendingEdits }) {
+  const { pending: count, invalid, saving } = pending;
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        type="button"
+        className="btn btn-ghost btn-sm"
+        onClick={pending.discard}
+        disabled={count === 0 || saving}
+      >
+        Discard
+      </button>
+      <div className="indicator">
+        {count > 0 && (
+          <span className="indicator-item badge badge-sm badge-warning">
+            {count}
+          </span>
+        )}
+        <button
+          type="button"
+          className="btn btn-primary btn-sm"
+          onClick={pending.save}
+          disabled={count === 0 || saving || invalid > 0}
+        >
+          {saving ? (
+            <span
+              aria-hidden="true"
+              className="loading loading-spinner loading-xs"
+            />
+          ) : (
+            <SaveIcon />
+          )}
+          Save changes
+          {count > 0 && (
+            <span className="sr-only">
+              , {count} {count === 1 ? "device" : "devices"} pending
+            </span>
+          )}
         </button>
       </div>
     </div>

@@ -4,13 +4,14 @@ import { Fragment } from "react";
 import type { ColumnKey } from "../lib/devices/columns";
 import type { DeviceCommand } from "../lib/devices/commands";
 import { groupId } from "../lib/devices/filtering";
-import type { DeviceRow } from "../lib/devices/types";
+import type { DeviceRow, GroupOption } from "../lib/devices/types";
 import type { DeviceView } from "../lib/devices/use-device-view";
+import type { PendingEdits } from "../lib/devices/use-pending";
 import { ColumnHeader } from "./column-header";
-import { DeviceActions } from "./device-actions";
 import { DeviceCell } from "./device-cell";
 import { DeviceDetails } from "./device-details";
-import { CloseIcon, DetailsIcon } from "./icons";
+import { DeviceEditCell } from "./device-edit-cell";
+import { DeviceRowActions } from "./device-row-actions";
 
 type Group = {
   key: string;
@@ -29,16 +30,26 @@ export type Accordion = {
   toggle: (key: string) => void;
 };
 
+/** The flat grouping edits in place, so it supplies the pending-edit store. */
+export type Spreadsheet = {
+  pending: PendingEdits;
+  groups: Record<string, { rooms: GroupOption[]; zones: GroupOption[] }>;
+};
+
 export function DeviceTable({
   group,
   view,
   command,
   accordion,
+  spreadsheet,
+  onEdit,
 }: {
   group: Group;
   view: DeviceView;
   command: CommandState;
   accordion: Accordion;
+  spreadsheet: Spreadsheet | null;
+  onEdit: (row: DeviceRow) => void;
 }) {
   return (
     <section
@@ -77,40 +88,34 @@ export function DeviceTable({
             {group.rows.map((row) => {
               const key = `${row.bridgeId}:${row.id}`;
               const expanded = accordion.open === key;
+              const catalog = spreadsheet?.groups[row.bridgeId];
               return (
                 <Fragment key={key}>
                   <tr>
                     {view.visibleColumns.map((item) => (
                       <td key={item.key}>
-                        <DeviceCell column={item} row={row} view={view} />
+                        {spreadsheet ? (
+                          <DeviceEditCell
+                            column={item}
+                            row={row}
+                            rooms={catalog?.rooms ?? []}
+                            zones={catalog?.zones ?? []}
+                            pending={spreadsheet.pending}
+                          />
+                        ) : (
+                          <DeviceCell column={item} row={row} view={view} />
+                        )}
                       </td>
                     ))}
                     <td>
-                      <span className="join flex justify-end">
-                        <DeviceActions
-                          row={row}
-                          run={command.run}
-                          busy={command.pending === row.id}
-                        />
-                        {/* The swap turns the icon over rather than replacing
-                            it, so the control never appears to jump. */}
-                        <label className="swap swap-rotate btn join-item btn-ghost btn-xs">
-                          <input
-                            type="checkbox"
-                            checked={expanded}
-                            onChange={() => accordion.toggle(key)}
-                            aria-label={`Details for ${row.name}`}
-                          />
-                          <span className="swap-off flex items-center gap-1">
-                            <DetailsIcon />
-                            Details
-                          </span>
-                          <span className="swap-on flex items-center gap-1">
-                            <CloseIcon />
-                            Close
-                          </span>
-                        </label>
-                      </span>
+                      <DeviceRowActions
+                        row={row}
+                        command={command}
+                        expanded={expanded}
+                        editable={!spreadsheet}
+                        onToggle={() => accordion.toggle(key)}
+                        onEdit={() => onEdit(row)}
+                      />
                     </td>
                   </tr>
                   {expanded && (
