@@ -1,12 +1,16 @@
 "use client";
 
 import { Fragment, useState } from "react";
-import type { Column, ColumnKey } from "../lib/devices/columns";
+import type { ColumnKey } from "../lib/devices/columns";
+import type { DeviceCommand } from "../lib/devices/commands";
 import { groupId } from "../lib/devices/filtering";
 import type { DeviceRow } from "../lib/devices/types";
 import type { DeviceView } from "../lib/devices/use-device-view";
 import { ColumnHeader } from "./column-header";
+import { DeviceActions } from "./device-actions";
+import { DeviceCell } from "./device-cell";
 import { DeviceDetails } from "./device-details";
+import { DetailsIcon } from "./icons";
 
 type Group = {
   key: string;
@@ -15,42 +19,20 @@ type Group = {
   options: Map<ColumnKey, string[]>;
 };
 
-function Cell({
-  column,
-  row,
-  view,
-}: {
-  column: Column;
-  row: DeviceRow;
-  view: DeviceView;
-}) {
-  if (!column.chips) return column.display(row);
-  const target = column.key === "zones" ? "zones" : "room";
-  return (
-    <span className="flex flex-wrap gap-1">
-      {column.chips(row).map((value) => (
-        <button
-          key={value}
-          type="button"
-          className="badge badge-soft badge-primary badge-sm cursor-pointer"
-          onClick={() => view.focusGroup(target, value)}
-        >
-          {value}
-          <span className="sr-only">
-            Show the {value} {target === "zones" ? "zone" : "room"}
-          </span>
-        </button>
-      ))}
-    </span>
-  );
-}
+export type CommandState = {
+  run: (row: DeviceRow, command: DeviceCommand) => void;
+  pending: string;
+  failed: Record<string, string>;
+};
 
 export function DeviceTable({
   group,
   view,
+  command,
 }: {
   group: Group;
   view: DeviceView;
+  command: CommandState;
 }) {
   const [open, setOpen] = useState<string[]>([]);
   const toggle = (key: string) =>
@@ -87,7 +69,7 @@ export function DeviceTable({
                 />
               ))}
               <th scope="col">
-                <span className="sr-only">Details</span>
+                <span className="sr-only">Actions</span>
               </th>
             </tr>
           </thead>
@@ -100,25 +82,38 @@ export function DeviceTable({
                   <tr>
                     {view.visibleColumns.map((item) => (
                       <td key={item.key}>
-                        <Cell column={item} row={row} view={view} />
+                        <DeviceCell column={item} row={row} view={view} />
                       </td>
                     ))}
                     <td>
-                      <button
-                        type="button"
-                        className="btn btn-ghost btn-xs"
-                        aria-expanded={expanded}
-                        onClick={() => toggle(key)}
-                      >
-                        <span aria-hidden="true">
-                          {expanded ? "\u2715" : "\u2139"}
-                        </span>
-                        <span className="sr-only">
-                          {expanded ? "Hide" : "Show"} details for {row.name}
-                        </span>
-                      </button>
+                      <span className="flex justify-end gap-1">
+                        <DeviceActions
+                          row={row}
+                          run={command.run}
+                          busy={command.pending === row.id}
+                        />
+                        <button
+                          type="button"
+                          className="btn btn-ghost btn-xs"
+                          aria-expanded={expanded}
+                          onClick={() => toggle(key)}
+                        >
+                          <DetailsIcon />
+                          Details
+                          <span className="sr-only">for {row.name}</span>
+                        </button>
+                      </span>
                     </td>
                   </tr>
+                  {command.failed[row.id] && (
+                    <tr>
+                      <td colSpan={view.visibleColumns.length + 1}>
+                        <p role="alert" className="text-error text-sm">
+                          {command.failed[row.id]}
+                        </p>
+                      </td>
+                    </tr>
+                  )}
                   {expanded && (
                     <DeviceDetails
                       row={row}

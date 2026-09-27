@@ -16,7 +16,7 @@ const bridgeAgent = new Agent({ maxCachedSessions: 0 });
 export function bridgeRequest(
   address: string,
   path: string,
-  method: "GET" | "POST",
+  method: "GET" | "POST" | "PUT",
   expectedId?: string,
   body?: string,
   applicationKey?: string,

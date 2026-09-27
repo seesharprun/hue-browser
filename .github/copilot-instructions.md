@@ -56,6 +56,7 @@ This repository is a web-based React application for managing residential Philip
 - Store documentation images and other media under `docs/media`.
 - Capture documentation screenshots at a 16:9 aspect ratio, such as a 1280x720 viewport, so they crop and scale consistently.
 - Capture documentation screenshots in the dark theme by seeding the theme preference in browser storage before loading the page.
+- Run browser automation headless. Set the viewport explicitly rather than relying on a visible window size, and hide the development overlay before capturing a screenshot.
 - Populate screenshots with fictional sample bridges and devices supplied through the browser automation session. Never publish a real home's bridge identifiers, addresses, application keys, or device names.
 - Treat screenshots as part of the interface. When a user interface control changes, update every screenshot that shows that control in the same increment.
 - Add explanatory comments to infrastructure files such as Dockerfiles and workflows, where the reasoning behind each step is not obvious.

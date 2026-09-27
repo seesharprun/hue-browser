@@ -13,4 +13,11 @@ export type DeviceRow = {
   software: string;
   hardware: string;
   mac: string;
+  light: LightService | null;
+};
+
+export type LightService = {
+  id: string;
+  on: boolean;
+  color: boolean;
 };

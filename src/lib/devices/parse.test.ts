@@ -41,6 +41,13 @@ testDevices("maps devices to rooms, zones, and identifying details", () => {
         ],
       },
       {
+        id: "a",
+        type: "light",
+        owner: { rid: "light-1", rtype: "device" },
+        on: { on: true },
+        color: { gamut_type: "C" },
+      },
+      {
         id: "zigbee-1",
         type: "zigbee_connectivity",
         owner: { rid: "light-1", rtype: "device" },
@@ -72,6 +79,7 @@ testDevices("maps devices to rooms, zones, and identifying details", () => {
       software: "1.104.2",
       hardware: "100b-10a",
       mac: "00:17:88:01:0b:12:34:56",
+      light: { id: "a", on: true, color: true },
     },
     {
       id: "sensor-1",
@@ -88,6 +96,7 @@ testDevices("maps devices to rooms, zones, and identifying details", () => {
       software: "Not reported",
       hardware: "Not reported",
       mac: "Not reported",
+      light: null,
     },
   ]);
   deviceAssert.throws(

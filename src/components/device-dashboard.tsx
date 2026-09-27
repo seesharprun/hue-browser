@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import type { PairedBridge } from "../lib/bridges/types";
 import { groupId } from "../lib/devices/filtering";
+import { useDeviceCommand } from "../lib/devices/use-command";
 import { useDeviceView } from "../lib/devices/use-device-view";
 import { useDevices } from "../lib/devices/use-devices";
 import { DeviceSkeleton } from "./device-skeleton";
@@ -12,6 +13,7 @@ import { DeviceToolbar } from "./device-toolbar";
 export function DeviceDashboard({ bridges }: { bridges: PairedBridge[] }) {
   const { rows, errors, loading, refresh } = useDevices(bridges);
   const view = useDeviceView(rows);
+  const command = useDeviceCommand(bridges);
   const { focus, clearFocus } = view;
 
   // Tag links switch grouping first, so the scroll waits for the new groups.
@@ -78,7 +80,12 @@ export function DeviceDashboard({ bridges }: { bridges: PairedBridge[] }) {
       {view.groups.map(
         (found) =>
           found.rows.length > 0 && (
-            <DeviceTable key={found.key} group={found} view={view} />
+            <DeviceTable
+              key={found.key}
+              group={found}
+              view={view}
+              command={command}
+            />
           ),
       )}
     </section>

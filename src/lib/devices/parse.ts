@@ -1,4 +1,4 @@
-import type { DeviceRow } from "./types";
+import type { DeviceRow, LightService } from "./types";
 
 export class DeviceDataError extends Error {}
 
@@ -69,6 +69,7 @@ export function deviceRows(
   const rooms = new Map<string, string>();
   const zones: Group[] = [];
   const macs = new Map<string, string>();
+  const lights = new Map<string, LightService>();
   for (const item of resources) {
     if (!isRecord(item) || typeof item.type !== "string") {
       throw new DeviceDataError("The bridge returned invalid resource data.");
@@ -84,6 +85,18 @@ export function deviceRows(
       const owner = reference(item.owner);
       const mac = text(item.mac_address);
       if (owner && mac) macs.set(owner, mac);
+    }
+    // The light service carries the switchable state and the command target.
+    if (item.type === "light") {
+      const owner = reference(item.owner);
+      if (owner && typeof item.id === "string") {
+        lights.set(owner, {
+          id: item.id,
+          on: isRecord(item.on) && item.on.on === true,
+          // A light omits the color key entirely when it cannot show color.
+          color: isRecord(item.color),
+        });
+      }
     }
   }
   const devices: DeviceRow[] = [];
@@ -110,6 +123,7 @@ export function deviceRows(
       software: text(parsed.product.software_version) || "Not reported",
       hardware: text(parsed.product.hardware_platform_type) || "Not reported",
       mac: macs.get(parsed.id) ?? "Not reported",
+      light: lights.get(parsed.id) ?? null,
     };
     for (const service of parsed.services) {
       const rid = reference(service);

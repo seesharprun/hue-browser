@@ -39,10 +39,26 @@ Select the information button at the end of a row to expand its details, which l
 
 ![An expanded row showing device capabilities, MAC address, and firmware versions](../media/device-details.png)
 
+## Identify and test a light
+
+Large setups make it hard to tell which row belongs to which physical fixture, so every row carries a small set of controls for checking one device.
+
+Select the actions button at the end of a row to open its menu, then choose an action.
+
+- **Flash to identify** blinks the device so you can spot it in the room. It works for any device that supports the Hue identify action, including switches and sensors.
+- **Turn on** and **Turn off** switch the device's light on or off.
+- **Set color** sends one of six preset colors and turns the light on first, because a color set on a dark light shows nothing.
+
+![The actions menu for one device, showing flash, power, and color controls](../media/device-actions.png)
+
+The menu only offers the controls the device supports. A device without a light service, such as a contact sensor, offers **Flash to identify** alone, and the color swatches appear only for lights that can show color. The button shows a spinner while a command is in flight, and a failed command reports its reason under the row.
+
+These controls send a single command each and do not change scenes, schedules, or automations stored on the bridge.
+
 ## Search and refresh
 
 Search and refresh work across every paired bridge at once.
 
 Use the search box to match a device name, product, model, room, zone, bridge, or capability. The dashboard loads devices when it opens and when you change paired bridges; select **Refresh** to pick up changes made elsewhere. While devices load, animated placeholder rows stand in for the table. If one bridge cannot be reached or rejects its application key, its error appears above the table while devices from other bridges remain visible. Check its network connection or pair it again if the key was revoked.
 
-This iteration is read-only: rename, room assignment, and identification controls will arrive in later iterations.
+This iteration adds identify and test controls only. Renaming devices and reassigning rooms will arrive in a later iteration.

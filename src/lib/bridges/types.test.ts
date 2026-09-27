@@ -11,7 +11,7 @@ const {
   forgetBridge,
   loadBridges,
   saveBridge,
-}: typeof import("./browser") = require("./browser.ts");
+}: typeof import("./storage") = require("./storage.ts");
 test("accepts local bridge addresses but not public or loopback targets", () => {
   for (const address of [
     "192.168.1.2",

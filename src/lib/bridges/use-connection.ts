@@ -1,14 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  clearBridges,
-  forgetBridge,
-  identifyBridge,
-  loadBridges,
-  pairBridge,
-  saveBridge,
-} from "./browser";
+import { identifyBridge, pairBridge } from "./browser";
+import { clearBridges, forgetBridge, loadBridges, saveBridge } from "./storage";
 import type { Bridge, PairedBridge } from "./types";
 import { useDiscovery } from "./use-discovery";
 
