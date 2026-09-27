@@ -44,7 +44,7 @@ export function BridgeActions({
         </button>
       </span>
       <p className="mt-3 text-sm text-base-content/60">
-        Uses Philips Hue online discovery. The server needs internet access.
+        Uses local mDNS and Philips Hue online discovery when available.
       </p>
       {found && (
         <div className="mt-4" aria-live="polite">

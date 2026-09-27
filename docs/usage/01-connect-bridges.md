@@ -3,13 +3,13 @@ title: Connect bridges
 description: Find, pair, and manage multiple Philips Hue bridges.
 ---
 
-You can find a Philips Hue bridge online or enter its local IP address yourself. In either case, the computer running Hue Browser must be able to reach the bridge over your home network, including when Hue Browser runs in Docker. Pairing requires a physical press of the button on the bridge.
+You can search for a Philips Hue bridge on the local network, ask Philips Hue online discovery, or enter its local IP address yourself. In each case, the computer running Hue Browser must be able to reach the bridge over your home network, including when Hue Browser runs in Docker. Pairing requires a physical press of the button on the bridge.
 
 ![The Hue Browser connection screen with discovery and manual address options](../media/connect-bridge.png)
 
-## Find bridges online
+## Search for bridges
 
-**Search my network** asks the Philips Hue online discovery service for bridges associated with your network. The computer or container running Hue Browser needs internet access for this option.
+**Search my network** tries local mDNS discovery and Philips Hue online discovery in the same search. Local mDNS works without internet access when the computer or container can send multicast DNS queries to UDP port 5353 and receive bridge responses; Philips Hue online discovery needs internet access.
 
 1. Select **Search my network**. Each discovered card shows a bridge ID and local IP address right away.
 2. Wait for the indicator beside each IP address while Hue Browser checks that bridge over secure local HTTPS. If it responds, its name appears in the card and you can select it.
@@ -17,11 +17,19 @@ You can find a Philips Hue bridge online or enter its local IP address yourself.
 
 ![Two discovered bridges listed with their bridge IDs and IP addresses](../media/discover-bridges.png)
 
-Online discovery may return no bridges even when a bridge is on your network. If the service is rate-limited and provides a wait time, Hue Browser displays it; otherwise you can wait before searching again or use the manual method. An HTTP 520 response shows a wait time only if the service provides one; 520 alone does not establish that you were rate-limited. A name lookup may also fail when the computer running Hue Browser cannot reach the bridge locally.
+Either discovery method may return no bridges even when a bridge is on your network, and a failure from one method does not hide bridges found by the other. If Philips Hue online discovery is rate-limited and provides a wait time, Hue Browser displays it; otherwise you can wait before searching again or use the manual method. An HTTP 520 response shows a wait time only if the service provides one; 520 alone does not establish that you were rate-limited. A name lookup may also fail when the computer running Hue Browser cannot reach the bridge locally.
+
+## Allow local discovery
+
+Local mDNS discovery depends on multicast support between the server running Hue Browser and the Philips Hue bridge. Docker's default bridged network commonly does not forward multicast DNS from the home network into the container, so the search can still rely on Philips Hue online discovery or manual entry unless you opt in to a network mode that carries multicast.
+
+- On Linux Docker hosts, run Hue Browser with host networking when you want local mDNS discovery inside the container: `docker run --rm --network host ghcr.io/seesharprun/hue-browser:latest`.
+- On Docker Desktop for Windows, enable host networking in Docker Desktop when available, or run the development server directly on Windows and allow Node.js through Windows Defender Firewall on private networks.
+- On any platform, keep manual IPv4 entry available for networks that block multicast or isolate wired, wireless, guest, or container traffic.
 
 ## Enter an IP address
 
-Manual entry works without the online discovery service. Find the bridge's local IPv4 address in your router or Philips Hue setup, then use the address field under **or**.
+Manual entry works without local mDNS or the Philips Hue online discovery service. Find the bridge's local IPv4 address in your router or Philips Hue setup, then use the address field under **or**.
 
 1. Type the address, such as `192.168.1.2`, in **Bridge address**. Enter only the address, without `https://` or a port number.
 2. Select **Connect to this address**. Hue Browser checks the bridge's identity over secure local HTTPS and shows its name and address before pairing.

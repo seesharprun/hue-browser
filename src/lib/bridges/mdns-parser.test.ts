@@ -10,6 +10,7 @@ test("builds a Philips Hue mDNS service query", () => {
   assert.equal(query.readUInt16BE(4), 1);
   assert.equal(query.includes(Buffer.from("_hue")), true);
   assert.equal(query.readUInt16BE(query.length - 4), 12);
+  assert.equal(query.readUInt16BE(query.length - 2), 0x8001);
 });
 
 test("parses Philips Hue mDNS bridge identities and local addresses", () => {

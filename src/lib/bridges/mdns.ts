@@ -22,14 +22,7 @@ export function discoverMdnsBridges(
       clearTimeout(timer);
       finish(socket, () => reject(error));
     });
-    socket.bind(MDNS_PORT, () => {
-      try {
-        socket.addMembership(MDNS_ADDRESS);
-      } catch (error) {
-        clearTimeout(timer);
-        finish(socket, () => reject(error));
-        return;
-      }
+    socket.bind(0, () => {
       const query = mdnsQuery();
       socket.send(query, 0, query.length, MDNS_PORT, MDNS_ADDRESS, (error) => {
         if (!error) return;
@@ -57,6 +50,6 @@ export function mdnsQuery(service = "_hue._tcp.local"): Buffer {
     Buffer.from([0]),
   ]);
   const header = Buffer.from([0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]);
-  const question = Buffer.from([0, 12, 0, 1]);
+  const question = Buffer.from([0, 12, 0x80, 1]);
   return Buffer.concat([header, name, question]);
 }

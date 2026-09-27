@@ -27,7 +27,19 @@ If the page does not load, confirm that the terminal window is still running and
 
 ## Connect to a bridge
 
-Once the welcome screen loads, follow the [bridge connection guide](/usage/connect-bridges) to find a bridge online or enter its local IP address and authorize pairing with its physical button.
+Once the welcome screen loads, follow the [bridge connection guide](/usage/connect-bridges) to search with local mDNS, use Philips Hue online discovery, or enter a bridge's local IP address and authorize pairing with its physical button.
+
+## Enable local discovery in Docker
+
+Hue Browser can discover Philips Hue bridges with local mDNS when the container can send multicast DNS queries to your home network and receive bridge responses. The default Docker bridged network often does not forward that multicast traffic, so manual IP entry and Philips Hue online discovery remain available.
+
+On a Linux Docker host, opt in to host networking when you want local mDNS discovery from the container.
+
+```bash
+docker run --rm --network host ghcr.io/seesharprun/hue-browser:latest
+```
+
+On Docker Desktop for Windows, enable host networking in Docker Desktop when your version supports it, or run `npm run dev` directly on Windows for development and allow Node.js through Windows Defender Firewall on private networks.
 
 ## Keep it running
 
