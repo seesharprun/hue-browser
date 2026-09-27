@@ -25,3 +25,7 @@ npm-debug.log*
 
 # favicon generated from the app icon for local documentation and deployment
 /public/favicon.svg
+
+# playwright output
+/playwright-report/
+/test-results/
