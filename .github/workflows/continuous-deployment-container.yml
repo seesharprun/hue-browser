@@ -1,4 +1,4 @@
-name: Continuous deployment for the container image
+name: Continuous deployment | Container
 # Publish a new image for every commit that lands on the default branch.
 on:
   push:

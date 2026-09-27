@@ -1,4 +1,4 @@
-name: Continuous deployment for the documentation site
+name: Continuous deployment | Documentation
 # Publish the documentation site for every commit that lands on the default branch.
 on:
   push:
@@ -32,6 +32,9 @@ jobs:
       - name: Configure GitHub Pages
         id: pages
         uses: actions/configure-pages@v6
+      # Keep the app icon as the source; Blume discovers favicon.svg in public.
+      - name: Copy the app icon for the documentation site
+        run: npm run docs:prepare
       - name: Build the documentation site
         run: npm run docs:build
       # Blume writes the built site to dist.
