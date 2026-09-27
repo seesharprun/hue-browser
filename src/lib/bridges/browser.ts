@@ -1,7 +1,7 @@
 import type { DeviceCommand } from "../devices/commands";
 import type { EditRequest } from "../devices/edits";
 import type { BridgeDevices, DeviceRow, GroupOption } from "../devices/types";
-import { isBridge, isPairedBridge, isRecord } from "./storage";
+import { isBridge, isPairedBridge, isRecord } from "./storage.ts";
 import type { Bridge, BridgeCandidate, PairedBridge } from "./types";
 
 async function callApi(path: string, body?: unknown): Promise<unknown> {
@@ -87,7 +87,7 @@ const STRING_FIELDS =
     " ",
   );
 
-function isDeviceRow(row: unknown, bridgeId: string) {
+export function isDeviceRow(row: unknown, bridgeId: string) {
   return (
     isRecord(row) &&
     row.bridgeId === bridgeId &&
@@ -104,13 +104,13 @@ function isDeviceRow(row: unknown, bridgeId: string) {
   );
 }
 
-function isStrings(value: unknown): value is string[] {
+export function isStrings(value: unknown): value is string[] {
   return (
     Array.isArray(value) && value.every((item) => typeof item === "string")
   );
 }
 
-function isGroupOptions(value: unknown): value is GroupOption[] {
+export function isGroupOptions(value: unknown): value is GroupOption[] {
   return (
     Array.isArray(value) &&
     value.every(

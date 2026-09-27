@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome ci --use-editorconfig=true --css-parse-tailwind-directives=true src theme.css blume.config.ts next.config.ts postcss.config.mjs",
-    "test": "node --test src/lib/bridges/types.test.ts src/lib/bridges/discovery-error.test.ts src/lib/devices/parse.test.ts src/lib/devices/commands.test.ts src/lib/devices/edits.test.ts src/lib/devices/pending.test.ts",
+    "test": "node --test src/lib/bridges/types.test.ts src/lib/bridges/discovery-error.test.ts src/lib/bridges/storage.test.ts src/lib/bridges/route-error.test.ts src/lib/bridges/browser.test.ts src/lib/bridges/discovery.test.ts src/lib/bridges/transport.test.ts src/lib/bridges/art.test.ts src/lib/devices/parse.test.ts src/lib/devices/columns.test.ts src/lib/devices/filtering.test.ts src/lib/devices/groups.test.ts src/lib/devices/commands.test.ts src/lib/devices/edits.test.ts src/lib/devices/pending.test.ts src/lib/theme.test.ts src/app/api/bridges/routes.test.ts",
     "format": "biome check --write --use-editorconfig=true --css-parse-tailwind-directives=true src theme.css blume.config.ts next.config.ts postcss.config.mjs",
     "docs:prepare": "node -e \"const fs=require('node:fs');fs.mkdirSync('public',{recursive:true});fs.copyFileSync('src/app/icon.svg','public/favicon.svg')\"",
     "predocs:dev": "npm run docs:prepare",
