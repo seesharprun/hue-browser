@@ -29,6 +29,7 @@ export function parseMdnsResponse(message: Buffer): BridgeCandidate[] {
     index += 1
   ) {
     const name = readName(message, offset);
+    if (name.offset + 10 > message.length) break;
     offset = name.offset;
     const type = message.readUInt16BE(offset);
     const klass = message.readUInt16BE(offset + 2) & 0x7fff;

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { discoverBridges, identifyBridge } from "./browser";
-import { discoveryErrorMessage } from "./discovery-result.ts";
+import { discoveryErrorMessage } from "./discovery-result";
 import type { BridgeCandidate, DiscoveredBridge } from "./types";
 
 async function resolveName(

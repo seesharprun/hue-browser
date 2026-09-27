@@ -39,6 +39,15 @@ test("ignores invalid mDNS bridge records", () => {
     [],
   );
   assert.deepEqual(parseMdnsResponse(Buffer.from([0, 1, 2])), []);
+  assert.deepEqual(
+    parseMdnsResponse(
+      Buffer.concat([
+        Buffer.from([0, 0, 0x84, 0, 0, 0, 0, 1, 0, 0, 0, 0]),
+        encodeName("truncated.local"),
+      ]),
+    ),
+    [],
+  );
 });
 
 function response(records: Buffer[]) {

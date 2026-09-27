@@ -22,7 +22,14 @@ export function discoverMdnsBridges(
       clearTimeout(timer);
       finish(socket, () => reject(error));
     });
-    socket.bind(0, () => {
+    socket.bind(MDNS_PORT, () => {
+      try {
+        socket.addMembership(MDNS_ADDRESS);
+      } catch (error) {
+        clearTimeout(timer);
+        finish(socket, () => reject(error));
+        return;
+      }
       const query = mdnsQuery();
       socket.send(query, 0, query.length, MDNS_PORT, MDNS_ADDRESS, (error) => {
         if (!error) return;
