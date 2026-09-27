@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3000",
     "build": "next build",
     "start": "next start",
     "lint": "biome ci --use-editorconfig=true --css-parse-tailwind-directives=true src",
     "format": "biome check --write --use-editorconfig=true --css-parse-tailwind-directives=true src",
     "docs:dev": "blume dev",
     "docs:build": "blume build",
-    "docs:preview": "blume preview"
+    "docs:preview": "blume preview --port 4000"
   },
   "dependencies": {
     "next": "16.3.6",
