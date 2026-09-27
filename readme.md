@@ -63,6 +63,8 @@ Either way the app is available at <http://localhost:3000>. Use a different host
 
 Open the app and connect a Philips Hue bridge. Follow the [bridge connection guide](https://seesharprun.github.io/hue-browser/usage/connect-bridges) for both methods, physical button pairing, and what to expect afterward.
 
+The [device browsing guide](https://seesharprun.github.io/hue-browser/usage/browse-devices) explains the read-only dashboard, column sorting and filtering, room and zone grouping, and refresh.
+
 ## Continuous integration and deployment
 
 GitHub Actions workflows keep the project healthy and distribute it. All of them are defined under `.github/workflows`, with names spelled out in full so that continuous integration and continuous deployment are easy to tell apart.

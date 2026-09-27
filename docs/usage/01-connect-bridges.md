@@ -5,6 +5,8 @@ description: Find, pair, and manage multiple Philips Hue bridges.
 
 You can find a Philips Hue bridge online or enter its local IP address yourself. In either case, the computer running Hue Browser must be able to reach the bridge over your home network, including when Hue Browser runs in Docker. Pairing requires a physical press of the button on the bridge.
 
+![The Hue Browser connection screen with discovery and manual address options](../media/connect-bridge.png)
+
 ## Find bridges online
 
 **Search my network** asks the Philips Hue online discovery service for bridges associated with your network. The computer or container running Hue Browser needs internet access for this option.
@@ -12,6 +14,8 @@ You can find a Philips Hue bridge online or enter its local IP address yourself.
 1. Select **Search my network**. Each discovered card shows a bridge ID and local IP address right away.
 2. Wait for the indicator beside each IP address while Hue Browser checks that bridge over secure local HTTPS. If it responds, its name appears in the card and you can select it.
 3. Select the bridge you want to pair. If a card says **Name unavailable** and shows an error, try the address shown on that card using the manual method below.
+
+![Two discovered bridges listed with their bridge IDs and IP addresses](../media/discover-bridges.png)
 
 Online discovery may return no bridges even when a bridge is on your network. If the service is rate-limited and provides a wait time, Hue Browser displays it; otherwise you can wait before searching again or use the manual method. An HTTP 520 response shows a wait time only if the service provides one; 520 alone does not establish that you were rate-limited. A name lookup may also fail when the computer running Hue Browser cannot reach the bridge locally.
 
@@ -32,4 +36,6 @@ Once Hue Browser shows the pairing prompt, authorize the connection on the physi
 2. Select **Pair this bridge** within 30 seconds. If the button-press window expires, press it again and retry. **Use another bridge** returns to the connection options.
 3. Look for the confirmation and the bridge under **Paired bridges**. Repeat the process for any additional bridges.
 
-For now, pairing confirms and lists the bridge; the device dashboard is not available yet. Application keys are saved in this browser's localStorage, not in the Docker container. Use a trusted browser profile: another browser or a cleared profile must pair again. **Forget** removes a bridge from this browser after confirmation, but does not revoke its application key on the physical bridge.
+![The pairing prompt asking for a button press on the selected bridge](../media/pair-bridge.png)
+
+After pairing, Hue Browser opens the device dashboard. Use **Manage bridges** to add another bridge or forget one. Application keys are saved in this browser's localStorage, not in the Docker container. Use a trusted browser profile: another browser or a cleared profile must pair again. **Forget** removes a bridge from this browser after confirmation, but does not revoke its application key on the physical bridge.

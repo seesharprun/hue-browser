@@ -20,6 +20,7 @@ export async function bridgeInput(request: Request, needsId = false) {
   return {
     address: body.address,
     id: typeof body.id === "string" ? body.id : "",
+    applicationKey: body.applicationKey,
   };
 }
 

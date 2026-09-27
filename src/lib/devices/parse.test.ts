@@ -1,0 +1,109 @@
+const { test: testDevices }: typeof import("node:test") = require("node:test");
+const deviceAssert: typeof import("node:assert/strict") = require("node:assert/strict");
+const { deviceRows }: typeof import("./parse") = require("./parse.ts");
+
+testDevices("maps devices to rooms, zones, and identifying details", () => {
+  const response = {
+    errors: [],
+    data: [
+      {
+        id: "room-1",
+        type: "room",
+        metadata: { name: "Kitchen" },
+        children: [{ rid: "light-1", rtype: "device" }],
+      },
+      {
+        id: "zone-1",
+        type: "zone",
+        metadata: { name: "Downstairs" },
+        children: [{ rid: "a", rtype: "light" }],
+      },
+      {
+        id: "zone-2",
+        type: "zone",
+        metadata: { name: "Evening" },
+        children: [{ rid: "a", rtype: "light" }],
+      },
+      {
+        id: "light-1",
+        type: "device",
+        metadata: { name: "Pendant", archetype: "pendant_round" },
+        product_data: {
+          product_name: "Hue bulb",
+          model_id: "LCT001",
+          manufacturer_name: "Signify Netherlands B.V.",
+          software_version: "1.104.2",
+          hardware_platform_type: "100b-10a",
+        },
+        services: [
+          { rid: "a", rtype: "light" },
+          { rid: "b", rtype: "zigbee_connectivity" },
+        ],
+      },
+      {
+        id: "zigbee-1",
+        type: "zigbee_connectivity",
+        owner: { rid: "light-1", rtype: "device" },
+        mac_address: "00:17:88:01:0b:12:34:56",
+      },
+      {
+        id: "sensor-1",
+        type: "device",
+        metadata: { name: "Door", archetype: "contact_sensor" },
+        product_data: { product_name: "Contact", model_id: "S1" },
+        services: [{ rid: "c", rtype: "contact" }],
+      },
+      { id: "scene-1", type: "scene", metadata: { name: "Dinner" } },
+    ],
+  };
+  deviceAssert.deepEqual(deviceRows(response, "bridge-1", "Home"), [
+    {
+      id: "light-1",
+      bridgeId: "bridge-1",
+      bridgeName: "Home",
+      name: "Pendant",
+      product: "Hue bulb",
+      model: "LCT001",
+      type: "pendant_round",
+      room: "Kitchen",
+      zones: ["Downstairs", "Evening"],
+      services: ["light", "zigbee_connectivity"],
+      manufacturer: "Signify Netherlands B.V.",
+      software: "1.104.2",
+      hardware: "100b-10a",
+      mac: "00:17:88:01:0b:12:34:56",
+    },
+    {
+      id: "sensor-1",
+      bridgeId: "bridge-1",
+      bridgeName: "Home",
+      name: "Door",
+      product: "Contact",
+      model: "S1",
+      type: "contact_sensor",
+      room: "Unassigned",
+      zones: [],
+      services: ["contact"],
+      manufacturer: "Not reported",
+      software: "Not reported",
+      hardware: "Not reported",
+      mac: "Not reported",
+    },
+  ]);
+  deviceAssert.throws(
+    () => deviceRows({ errors: [{}], data: [] }, "a", "b"),
+    /could not list all resources/i,
+  );
+  deviceAssert.throws(
+    () => deviceRows({ errors: [], data: [{ type: "device" }] }, "a", "b"),
+    /invalid device data/i,
+  );
+  deviceAssert.throws(
+    () => deviceRows({ errors: [], data: [{ type: "room" }] }, "a", "b"),
+    /invalid room data/i,
+  );
+  deviceAssert.throws(
+    () => deviceRows({ errors: [], data: [{ type: "zone" }] }, "a", "b"),
+    /invalid zone data/i,
+  );
+});

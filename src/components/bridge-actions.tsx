@@ -31,6 +31,12 @@ export function BridgeActions({
         disabled={busy || searching}
         onClick={onSearch}
       >
+        {searching && (
+          <span
+            aria-hidden="true"
+            className="loading loading-spinner loading-sm"
+          />
+        )}
         {searching ? "Finding bridges..." : "Search my network"}
       </button>
       <p className="mt-3 text-sm text-base-content/60">

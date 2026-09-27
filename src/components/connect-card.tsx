@@ -1,11 +1,14 @@
 "use client";
 
-import { useConnection } from "../lib/bridges/use-connection";
+import type { ReturnTypeConnection } from "../lib/bridges/use-connection";
 import { BridgeActions } from "./bridge-actions";
 import { PairedBridges } from "./paired-bridges";
 
-export function ConnectCard() {
-  const connection = useConnection();
+export function ConnectCard({
+  connection,
+}: {
+  connection: ReturnTypeConnection;
+}) {
   const {
     saved,
     found,
@@ -55,6 +58,12 @@ export function ConnectCard() {
                   onClick={pair}
                   disabled={busy}
                 >
+                  {busy && (
+                    <span
+                      aria-hidden="true"
+                      className="loading loading-spinner loading-sm"
+                    />
+                  )}
                   {busy ? "Pairing..." : "Pair this bridge"}
                 </button>
                 <button
@@ -91,7 +100,11 @@ export function ConnectCard() {
             </button>
           </>
         ) : (
-          <p className="mt-5 text-sm" role="status">
+          <p className="mt-5 flex items-center gap-2 text-sm" role="status">
+            <span
+              aria-hidden="true"
+              className="loading loading-ring loading-sm text-primary"
+            />
             Loading saved bridges...
           </p>
         )}

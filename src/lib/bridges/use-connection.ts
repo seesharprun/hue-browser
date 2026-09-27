@@ -130,3 +130,5 @@ export function useConnection() {
     cancel: () => setPending(null),
   };
 }
+
+export type ReturnTypeConnection = ReturnType<typeof useConnection>;

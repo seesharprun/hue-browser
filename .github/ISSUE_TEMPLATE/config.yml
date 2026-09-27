@@ -1,0 +1,6 @@
+# Structured templates only, so every report arrives with the context needed to act on it.
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://seesharprun.github.io/hue-browser
+    about: Read the installation and usage guides before filing an issue.

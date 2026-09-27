@@ -1,3 +1,4 @@
+import type { DeviceRow } from "../devices/types";
 import type { Bridge, BridgeCandidate, PairedBridge } from "./types";
 
 const STORAGE_KEY = "hue-browser-bridges";
@@ -110,4 +111,40 @@ export async function pairBridge(bridge: Bridge): Promise<PairedBridge> {
   if (!isPairedBridge(value))
     throw new Error("The bridge pairing response was invalid.");
   return value;
+}
+
+export async function loadDevices(bridge: PairedBridge): Promise<DeviceRow[]> {
+  const value = await callApi("devices", {
+    address: bridge.address,
+    id: bridge.id,
+    applicationKey: bridge.applicationKey,
+  });
+  if (
+    !Array.isArray(value) ||
+    !value.every(
+      (row: unknown) =>
+        isRecord(row) &&
+        typeof row.id === "string" &&
+        row.bridgeId === bridge.id &&
+        typeof row.name === "string" &&
+        typeof row.product === "string" &&
+        typeof row.model === "string" &&
+        typeof row.type === "string" &&
+        typeof row.room === "string" &&
+        typeof row.manufacturer === "string" &&
+        typeof row.software === "string" &&
+        typeof row.hardware === "string" &&
+        typeof row.mac === "string" &&
+        Array.isArray(row.zones) &&
+        row.zones.every((zone: unknown) => typeof zone === "string") &&
+        Array.isArray(row.services) &&
+        row.services.every((service: unknown) => typeof service === "string"),
+    )
+  ) {
+    throw new Error("The device response was invalid.");
+  }
+  return value.map((row: DeviceRow) => ({
+    ...row,
+    bridgeName: bridge.name ?? bridge.address,
+  }));
 }

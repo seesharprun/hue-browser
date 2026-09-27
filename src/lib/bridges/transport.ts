@@ -13,12 +13,14 @@ const MAX_BYTES = 32_768;
 // Resumed TLS sessions can omit the peer certificate needed to check bridge ID.
 const bridgeAgent = new Agent({ maxCachedSessions: 0 });
 
-function bridgeRequest(
+export function bridgeRequest(
   address: string,
   path: string,
   method: "GET" | "POST",
   expectedId?: string,
   body?: string,
+  applicationKey?: string,
+  maxBytes = MAX_BYTES,
 ): Promise<{ value: unknown; certificateId: string | undefined }> {
   return new Promise((resolve, reject) => {
     const req = request(
@@ -32,12 +34,15 @@ function bridgeRequest(
         rejectUnauthorized: true,
         checkServerIdentity: (_, certificate) =>
           expectedId ? checkServerIdentity(expectedId, certificate) : undefined,
-        headers: body
-          ? {
-              "content-type": "application/json",
-              "content-length": Buffer.byteLength(body),
-            }
-          : undefined,
+        headers: {
+          ...(body
+            ? {
+                "content-type": "application/json",
+                "content-length": Buffer.byteLength(body),
+              }
+            : {}),
+          ...(applicationKey ? { "hue-application-key": applicationKey } : {}),
+        },
       },
       (res) => {
         const socket = res.socket as TLSSocket;
@@ -48,7 +53,12 @@ function bridgeRequest(
         if (res.statusCode !== 200) {
           res.resume();
           reject(
-            new BridgeError("The bridge could not complete the request.", 502),
+            new BridgeError(
+              res.statusCode === 401 || res.statusCode === 403
+                ? "The bridge rejected this application key. Pair it again."
+                : "The bridge could not complete the request.",
+              res.statusCode === 401 || res.statusCode === 403 ? 403 : 502,
+            ),
           );
           return;
         }
@@ -56,7 +66,7 @@ function bridgeRequest(
         let size = 0;
         res.on("data", (chunk: Buffer) => {
           size += chunk.length;
-          if (size > MAX_BYTES) {
+          if (size > maxBytes) {
             res.destroy(
               new BridgeError("The bridge response was too large.", 502),
             );

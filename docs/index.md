@@ -29,7 +29,7 @@ You need a few things before you start.
 
 ## Get started
 
-Read the [installation guide](/installation) to run the app, then [connect a bridge](/usage/connect-bridges). Managing your lights is still being built, and these guides grow as those features arrive.
+Read the [installation guide](/installation) to run the app, then [connect a bridge](/usage/connect-bridges) and [browse your devices](/usage/browse-devices). Editing and testing lights are still being built.
 
 ## Appearance
 

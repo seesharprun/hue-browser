@@ -73,3 +73,27 @@
   --depth: 0;
   --noise: 1;
 }
+
+/* Placeholders breathe like a lamp warming up rather than flashing, and each
+   one starts a beat later so a loading table fills in as a slow cascade. */
+@keyframes lofi-warm {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.lofi-warm {
+  animation: lofi-warm 2.4s ease-in-out infinite;
+}
+
+/* Ambient motion is removed rather than replaced, so placeholders stay visible. */
+@media (prefers-reduced-motion: reduce) {
+  .lofi-warm,
+  .skeleton {
+    animation: none;
+  }
+}

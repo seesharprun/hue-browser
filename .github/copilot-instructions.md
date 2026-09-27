@@ -17,7 +17,7 @@ This repository is a web-based React application for managing residential Philip
 - Let a single familiar room or window illustration carry environmental detail while the task controls and copy stay quiet and concise. Draw from lived-in interiors, plants, books, pets, rain, and distant city lights as appropriate to the scene, rather than putting every detail on one screen. Favor ordinary window frames and restrained overlays over decorative card systems or futuristic chrome; keep corner radii between `0.25rem` and `1rem`.
 - When adding ambient motion, use seamless, low-amplitude environmental loops such as falling rain, drifting steam, turning pages, blinking screens, breathing figures, or occasional pet movement. Keep task controls stable, avoid distracting motion, and honor `prefers-reduced-motion` by removing the ambient animation without hiding content.
 - Use Biome for linting and formatting, configured through CLI flags in `package.json` scripts so no Biome configuration file is needed. Do not use ESLint, which cannot lint TypeScript without a configuration file.
-- Use Playwright to capture screenshots for documentation.
+- Capture documentation screenshots with the Playwright MCP server available in the agent session. Do not add Playwright, or any other browser automation tool, to the project's dependencies; screenshot capture is an authoring activity rather than a project capability.
 - Prefer established components and libraries over custom implementations.
 - Use the latest stable language versions and toolchains by default.
 
@@ -29,6 +29,7 @@ This repository is a web-based React application for managing residential Philip
 - Use a dedicated HTTPS agent with TLS session caching disabled when checking Philips Hue bridge certificate identities. Node can return an empty peer certificate on a resumed session even when its CA verification succeeds; never bypass verification to work around this.
 - For bridge pairing, use Philips Hue online discovery with manual local IPv4 entry as the offline fallback; do not add mDNS networking or UPnP. Keep each browser's paired bridges and application keys in its own localStorage rather than requiring a shared Docker volume. Send keys only to the server-side API when needed, and never log them.
 - Discovery cards show a bridge ID and IP immediately. Resolve friendly names separately through verified local bridge requests, show an indicator beside each IP until its name lookup finishes, and highlight the name when available. Label the 16-character discovery identifier "Bridge ID", not "serial number".
+- The read-only dashboard lists physical devices of all types across paired bridges. Show bridge, room, archetype/type, product, model, and services in columns; provide search, bridge/room/type filters, grouping, refresh, and per-bridge errors without concealing healthy bridges.
 - If Philips Hue's online discovery service returns HTTP 429, report the rate limit explicitly and direct the user to manual IP entry; do not present it as an empty discovery result or a generic gateway error. Show a wait time from a valid Retry-After header on 429 or other errors such as 520, but do not assume 520 is throttling when no such header is present.
 - Pin `turbopack.root` to the repository working directory in the existing Next.js config when ancestor lockfiles confuse root detection. Never alter a lockfile outside this repository to suppress the warning.
 - Keep each source file at or below 150 lines. When a file approaches this limit, split it along clear responsibility boundaries.
@@ -53,10 +54,19 @@ This repository is a web-based React application for managing residential Philip
 - The documentation site is published to a project subpath on GitHub Pages, so its assets are linked with a base path prefix. Preview a build with the documentation tool's own preview command, which applies that base path. Serving the build output directly from a static file server requests assets at the wrong location and makes the site appear unstyled.
 - Write documentation pages as Markdown (`.md`) rather than MDX, since the documentation does not use component features.
 - Store documentation images and other media under `docs/media`.
+- Capture documentation screenshots at a 16:9 aspect ratio, such as a 1280x720 viewport, so they crop and scale consistently.
+- Capture documentation screenshots in the dark theme by seeding the theme preference in browser storage before loading the page.
+- Populate screenshots with fictional sample bridges and devices supplied through the browser automation session. Never publish a real home's bridge identifiers, addresses, application keys, or device names.
+- Treat screenshots as part of the interface. When a user interface control changes, update every screenshot that shows that control in the same increment.
 - Add explanatory comments to infrastructure files such as Dockerfiles and workflows, where the reasoning behind each step is not obvious.
 - Include an attribution section in `readme.md` that links every toolchain, library, and package used to build the project, presented as a table. Link to each project's home page first, its documentation page if it has no home page, its package manager page if it has neither, and its GitHub repository as a last resort.
 - Update the readme and documentation at the end of every increment, before suggesting a commit message. Treat documentation as part of the increment rather than a follow-up task.
 - Keep the README's bridge-connection guidance brief and link to the usage guide for both connection methods, pairing steps, expected results, and troubleshooting. Place how-to guides in `docs/usage` so Blume generates a Usage section in the sidebar; leave installation guidance on `docs/installation.md`.
+- Order documentation pages in reading order with Blume's numeric file prefixes, such as `01-connect-bridges.md` and `02-browse-devices.md`. Blume strips the prefix from the published URL, so prefer this over sidebar frontmatter or folder meta files.
+- Optimize the documentation site for search engines, social previews, and AI agents alike. Rely on Blume's defaults, which cover metadata, canonicals, Open Graph images, structured data, `sitemap.xml`, `robots.txt`, content signals, `llms.txt`, Markdown mirrors, and agent discovery manifests. Configure only what a default cannot infer: the source repository, the Open Graph palette, the software product description, and the `llms.txt` details block that tells an agent when to reach for this project and how to run it.
+- Do not enable Blume's MCP server. It needs a live endpoint and server output, which the static GitHub Pages deployment cannot provide.
+- Give every documentation page a `title` and a `description`, since both feed the page metadata, its Open Graph card, and `llms.txt`.
+- Blume's `--isolated` build verifies pages, routes, and Open Graph cards, but omits publish-only artifacts such as `robots.txt`, `sitemap.xml`, `llms.txt`, and `agent-readability.json`. Those come from the real build in the deployment workflow.
 
 ## Writing style
 

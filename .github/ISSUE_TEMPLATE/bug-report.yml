@@ -1,0 +1,63 @@
+name: Bug report
+description: Report behavior that does not match the documentation.
+title: "Bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve Hue Browser. Please leave out bridge application keys and other secrets.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened
+      description: Describe the behavior you saw and the behavior you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the steps that lead to the problem.
+      placeholder: |
+        1. Open the app
+        2. Select Search my network
+        3. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of Hue Browser is affected?
+      options:
+        - Bridge discovery or pairing
+        - Device dashboard
+        - Installation or Docker
+        - Documentation site
+        - Something else
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The container tag or commit you are running.
+      placeholder: ghcr.io/seesharprun/hue-browser:latest
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Your operating system and browser.
+      placeholder: Windows 11, Edge 140
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Messages or logs
+      description: Paste any on-screen error or container log output, with secrets removed.
+      render: text
+    validations:
+      required: false

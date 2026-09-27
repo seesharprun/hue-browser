@@ -1,0 +1,41 @@
+name: Feature request
+description: Suggest a capability that would help you manage your Philips Hue deployment.
+title: "Feature: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would this make easier
+      description: Describe the management task you want to accomplish.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe how Hue Browser would work if this existed.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of Hue Browser would this change?
+      options:
+        - Bridge discovery or pairing
+        - Device dashboard
+        - Bulk editing
+        - Identify and test controls
+        - Installation or Docker
+        - Documentation site
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+      description: Describe any workaround you use today.
+    validations:
+      required: false

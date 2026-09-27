@@ -21,5 +21,8 @@ next-env.d.ts
 npm-debug.log*
 .blume-verify/
 
+# scratch output from the documentation screenshot session
+/.playwright-mcp/
+
 # favicon generated from the app icon for local documentation and deployment
 /public/favicon.svg
