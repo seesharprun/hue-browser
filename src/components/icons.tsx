@@ -78,7 +78,7 @@ export function RefreshIcon() {
   return <Icon label="Refresh" path={REFRESH} size="size-[14px]" />;
 }
 
-const groupings = { room: ROOMS, zones: ZONES, none: FLAT };
+const groupings = { room: ROOMS, zone: ZONES, zones: ZONES, none: FLAT };
 
 const tones = {
   info: INFO,

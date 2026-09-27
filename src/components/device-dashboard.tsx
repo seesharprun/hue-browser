@@ -11,6 +11,7 @@ import { usePendingEdits } from "../lib/devices/use-pending";
 import { useToasts } from "../lib/ui/toasts";
 import { BridgeFooter } from "./bridge-footer";
 import { DeviceEditModal } from "./device-edit-modal";
+import { DeviceMigrationModal } from "./device-migration-modal";
 import { DeviceSkeleton } from "./device-skeleton";
 import { DeviceStats } from "./device-stats";
 import { DeviceTable } from "./device-table";
@@ -28,6 +29,7 @@ export function DeviceDashboard({ bridges }: { bridges: PairedBridge[] }) {
   const pendingEdits = usePendingEdits(bridges, rows, refresh);
   const { notify } = useToasts();
   const { focus, clearFocus, group } = view;
+  const [migrating, setMigrating] = useState(false);
 
   // The flat grouping is the spreadsheet; the grouped views use the modal.
   const spreadsheet =
@@ -74,6 +76,8 @@ export function DeviceDashboard({ bridges }: { bridges: PairedBridge[] }) {
         loading={loading}
         pending={spreadsheet ? pendingEdits : null}
         onRefresh={refresh}
+        onMigrate={() => setMigrating(true)}
+        canMigrate={rows.length > 0}
       />
       {/* Placeholder groups keep the page from collapsing to blank while the
           bridges answer, which otherwise reads as a broken table. */}
@@ -105,6 +109,13 @@ export function DeviceDashboard({ bridges }: { bridges: PairedBridge[] }) {
             />
           ),
       )}
+      <DeviceMigrationModal
+        bridges={bridges}
+        groups={groups}
+        open={migrating}
+        onClose={() => setMigrating(false)}
+        onDone={refresh}
+      />
       {editing && (
         <DeviceEditModal
           // Remounting per device resets the form to that device's values.

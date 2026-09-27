@@ -8,11 +8,6 @@ export default defineConfig({
     accent: { light: "#a96a22", dark: "#e8b072" },
     action: "#3a7572",
     radius: "md",
-    fonts: {
-      display: { name: "Nunito Sans", weights: [400, 600, 700] },
-      body: { name: "Nunito Sans", weights: [400, 600, 700] },
-      mono: "ibm-plex-mono",
-    },
   },
   content: {
     root: "docs",
@@ -23,6 +18,7 @@ export default defineConfig({
   },
   seo: {
     og: {
+      fonts: [],
       palette: {
         accent: "#e8b072",
         background: "#141a2e",

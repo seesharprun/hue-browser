@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
-import { Nunito_Sans } from "next/font/google";
 import { ThemeToggle } from "../components/theme-toggle";
 import { themeInitScript } from "../lib/theme";
 import { ToastProvider } from "../lib/ui/toasts";
 import "./globals.css";
-
-const nunito = Nunito_Sans({
-  variable: "--font-nunito",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Hue Browser",
@@ -20,11 +14,7 @@ export const metadata: Metadata = {
    server markup, so suppress that expected hydration warning here. */
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${nunito.variable} h-full antialiased`}
-      suppressHydrationWarning
-    >
+    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
       <head>
         <script
           // biome-ignore lint/security/noDangerouslySetInnerHtml: the theme must be applied before the first paint
