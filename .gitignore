@@ -19,3 +19,7 @@ next-env.d.ts
 
 # logs
 npm-debug.log*
+.blume-verify/
+
+# favicon generated from the app icon for local documentation and deployment
+/public/favicon.svg

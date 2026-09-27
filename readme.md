@@ -4,7 +4,7 @@ Hue Browser is a web application for managing large residential Philips Hue depl
 
 This project presents your whole deployment as an industrial-style dashboard. You can browse every device across every bridge, filter and group by room and device type, and make bulk edits such as renaming lights or reassigning them to rooms as straightforward data entry in a single table. It also offers basic identify and test controls, so you can flash a light or toggle it to confirm you are editing the fixture you think you are.
 
-Hue Browser talks to bridges through the local [Hue REST API](https://github.com/openhue/openhue-api) and ships as a Docker container you can run on your own network.
+Hue Browser talks to bridges through the local [Philips Hue REST API](https://github.com/openhue/openhue-api) and ships as a Docker container you can run on your own network.
 
 ## Prerequisites
 
@@ -74,6 +74,8 @@ The full documentation site is written for people who want to run Hue Browser ra
 
 Documentation source lives in `docs` as Markdown, with images in `docs/media`. Run `npm run docs:dev` to work on it locally.
 
+The application icon lives in `src/app/icon.svg`. The documentation commands and deployment copy it to Blume's public assets so both sites use the same favicon; restart an already running docs server to pick up the new icon.
+
 ## Stack
 
 The application layers a React interface over an API layer that handles all bridge communication, which keeps device transformations independent of the interface that triggers them.
@@ -81,7 +83,7 @@ The application layers a React interface over an API layer that handles all brid
 ```mermaid
 flowchart TD
     A[Browser UI<br/>React and daisyUI] --> B[API layer<br/>Next.js route handlers]
-    B --> C[Hue REST API<br/>local bridges]
+    B --> C[Philips Hue REST API<br/>local bridges]
 ```
 
 ## Attribution

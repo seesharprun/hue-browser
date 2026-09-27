@@ -9,7 +9,13 @@ This repository is a web-based React application for managing residential Philip
 - Use Tailwind CSS for styling.
 - Use daisyUI for UI components and design primitives.
 - Follow the [lo-fi art](https://trends.daisyui.com/trend/lo-fi-art/) visual style. Balance dusty indigo, muted blue, mauve, and soft teal night tones against localized amber, peach, or pink light from lamps, screens, and windows. Use warm lamp amber or peach for `primary`, dusty indigo or soft teal for `secondary`, and step `base-100`, `base-200`, and `base-300` through muted night blue, deep mauve-blue, and dark indigo. This style is not monochrome, and it is distinct from the daisyUI theme that happens to be named `lofi`.
+- Keep texture subtle: daisyUI's `--noise: 1` provides the analog grain associated with the style without adding a separate texture asset.
 - Match documentation images and other artwork to the lo-fi art palette rather than drawing them in black and white.
+- Match the app's header theme-toggle icons to Blume's light/dark control: use 18px outline sun and moon glyphs with a 2px stroke, not solid filled icons.
+- Keep the app's favicon in `src/app/icon.svg` as the source of truth. Copy it to Blume's ignored `public/favicon.svg` before local docs development, docs builds, and in the documentation build job rather than maintaining a second icon by hand. Do not copy it to `public/icon.svg`, which collides with Next.js's `/icon.svg` route.
+- Use Nunito Sans as the first font for both app and docs text, including headings; use its local family name second and the other suggested lo-fi art fonts from position three onward as fallback faces rather than downloading them all. Keep headings modest so the illustration sets the mood.
+- Let a single familiar room or window illustration carry environmental detail while the task controls and copy stay quiet and concise. Draw from lived-in interiors, plants, books, pets, rain, and distant city lights as appropriate to the scene, rather than putting every detail on one screen. Favor ordinary window frames and restrained overlays over decorative card systems or futuristic chrome; keep corner radii between `0.25rem` and `1rem`.
+- When adding ambient motion, use seamless, low-amplitude environmental loops such as falling rain, drifting steam, turning pages, blinking screens, breathing figures, or occasional pet movement. Keep task controls stable, avoid distracting motion, and honor `prefers-reduced-motion` by removing the ambient animation without hiding content.
 - Use Biome for linting and formatting, configured through CLI flags in `package.json` scripts so no Biome configuration file is needed. Do not use ESLint, which cannot lint TypeScript without a configuration file.
 - Use Playwright to capture screenshots for documentation.
 - Prefer established components and libraries over custom implementations.
@@ -50,6 +56,8 @@ This repository is a web-based React application for managing residential Philip
 - Write prose in a positive and constructive voice. Describe what this project makes easier rather than what is painful, and never speak negatively about other applications or products.
 - Do not use em-dashes. Use commas, colons, or separate sentences instead.
 - Do not hard wrap Markdown prose at a fixed column. Write each paragraph as a single continuous line and let the editor soft wrap it.
+- Always write "Philips Hue" rather than a bare "Hue" when referring to the product, its bridges, its devices, or its API. The only exception is the name of this project, "Hue Browser", and identifiers derived from it such as `hue-browser`.
+- Keep interface copy plain and literal. Do not add conversational flourishes such as time-of-day greetings; state what the screen is for instead.
 
 ## Conventions and contributor experience
 
@@ -79,6 +87,8 @@ This repository is a web-based React application for managing residential Philip
 - Never assume files are unchanged between turns. Read them from disk before acting on them.
 - Assume the project is open in Visual Studio Code.
 - Leave `npm run dev` to the developer. Start a development server only to verify something, then stop it.
+- Do not open previews of the application or the documentation site in the app, and do not start servers to show the developer a result. The developer runs and watches these themselves. Verify work through builds, linting, and command line requests instead, and simply report what changed.
+- Pin a fixed port in every script that serves something, rather than letting the tool pick a port or fall forward to the next free one. The application development server uses port 3000, the documentation preview server uses port 4000, and the documentation development server uses port 4001. Use those ports when verifying, and keep any new serving script on its own fixed port.
 
 ## Conflicting requests
 

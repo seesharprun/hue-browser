@@ -1,0 +1,52 @@
+/* Lo-fi art palette shared by the application and the documentation site.
+   Both ramps are declared together so each consumer can map them onto its own
+   light and dark selectors without repeating the color values. */
+:root {
+  --lofi-font-fallbacks:
+    "Nunito Sans", "Quicksand", "M PLUS Rounded 1c", "Zen Kaku Gothic New",
+    "Lora", system-ui, sans-serif;
+
+  /* Night: muted indigo, mauve, and teal lit by localized amber and peach. */
+  --lofi-night-surface: #141a2e;
+  --lofi-night-raised: #191f36;
+  --lofi-night-panel: #232a44;
+  --lofi-night-muted: #2b3353;
+  --lofi-night-border: #3c4468;
+  --lofi-night-text-muted: #8b93b8;
+  --lofi-night-text: #cfd4e8;
+  --lofi-night-lamp: #e8b072;
+  --lofi-night-glow: #e6b191;
+  --lofi-night-teal: #4a8a86;
+  --lofi-night-mauve: #a980a0;
+
+  /* Pendant scene, shared by the documentation hero and the connect page. A
+     shade body stays dark even when the light is on, because the glow escapes
+     at the rim and the bulb rather than through the shade itself. */
+  --lofi-scene-sky: #22314d;
+  --lofi-scene-cord: #3c4468;
+  --lofi-scene-shade-indigo: #39416a;
+  --lofi-scene-rim-indigo: #4b5486;
+  --lofi-scene-shade-teal: #2f5a5c;
+  --lofi-scene-rim-teal: #4a8a86;
+  --lofi-scene-shade-amber: #5d5470;
+  --lofi-scene-rim-amber: #e8b072;
+  --lofi-scene-bulb-amber: #f0c489;
+  --lofi-scene-bloom-amber: #d9975a;
+  --lofi-scene-shade-peach: #6b5465;
+  --lofi-scene-rim-peach: #e6b191;
+  --lofi-scene-bulb-peach: #eec5aa;
+  --lofi-scene-bloom-peach: #d79a7e;
+
+  /* Day: the same scene under warm daylight on dusty paper. */
+  --lofi-day-surface: #f3efe9;
+  --lofi-day-raised: #e9e2da;
+  --lofi-day-panel: #ded5cc;
+  --lofi-day-muted: #e4dcd4;
+  --lofi-day-border: #cabfb4;
+  --lofi-day-text-muted: #64688a;
+  --lofi-day-text: #262c45;
+  --lofi-day-lamp: #a96a22;
+  --lofi-day-glow: #b0674a;
+  --lofi-day-teal: #2f6b68;
+  --lofi-day-mauve: #7c5473;
+}

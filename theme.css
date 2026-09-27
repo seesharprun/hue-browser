@@ -1,0 +1,36 @@
+/* Maps the shared lo-fi art palette onto Blume's design tokens so the
+   documentation site matches the application. Light mode is the daytime ramp
+   and dark mode is the night ramp. */
+/* Blume inlines this file into .blume/src/generated/app.css, so the import
+   path is relative to that generated directory rather than the project root. */
+@import "../../../src/styles/lofi-art.css";
+
+:root {
+  --blume-font-body:
+    var(--blume-font-body-src, "Nunito Sans"), var(--lofi-font-fallbacks);
+  --blume-font-display: var(--blume-font-body);
+  --blume-background: var(--lofi-day-surface);
+  --blume-foreground: var(--lofi-day-text);
+  --blume-muted: var(--lofi-day-muted);
+  --blume-muted-foreground: var(--lofi-day-text-muted);
+  --blume-border: var(--lofi-day-border);
+  --blume-accent: var(--lofi-day-lamp);
+  --blume-accent-foreground: var(--lofi-day-surface);
+  --blume-action: var(--lofi-day-teal);
+  --blume-action-foreground: var(--lofi-day-surface);
+  --blume-code-background: var(--lofi-day-raised);
+  --blume-radius: 0.75rem;
+}
+
+:root[data-theme="dark"] {
+  --blume-background: var(--lofi-night-surface);
+  --blume-foreground: var(--lofi-night-text);
+  --blume-muted: var(--lofi-night-muted);
+  --blume-muted-foreground: var(--lofi-night-text-muted);
+  --blume-border: var(--lofi-night-border);
+  --blume-accent: var(--lofi-night-lamp);
+  --blume-accent-foreground: var(--lofi-night-surface);
+  --blume-action: var(--lofi-night-teal);
+  --blume-action-foreground: var(--lofi-night-surface);
+  --blume-code-background: var(--lofi-night-raised);
+}

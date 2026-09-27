@@ -1,6 +1,75 @@
 @import "tailwindcss";
+@import "../styles/lofi-art.css";
+@theme {
+  --font-sans: var(--font-nunito), var(--lofi-font-fallbacks);
+  --font-display: var(--font-sans);
+}
 @plugin "daisyui" {
-  themes:
-    lofi --default,
-    black --prefersdark;
+  themes: false;
+}
+@plugin "daisyui/theme" {
+  name: "lofi-art-night";
+  prefersdark: true;
+  color-scheme: dark;
+  --color-base-100: var(--lofi-night-surface);
+  --color-base-200: var(--lofi-night-raised);
+  --color-base-300: var(--lofi-night-panel);
+  --color-base-content: var(--lofi-night-text);
+  --color-primary: var(--lofi-night-lamp);
+  --color-primary-content: var(--lofi-night-surface);
+  --color-secondary: var(--lofi-night-teal);
+  --color-secondary-content: var(--lofi-night-surface);
+  --color-accent: var(--lofi-night-glow);
+  --color-accent-content: var(--lofi-night-surface);
+  --color-neutral: var(--lofi-night-muted);
+  --color-neutral-content: var(--lofi-night-text);
+  --color-info: var(--lofi-night-teal);
+  --color-info-content: var(--lofi-night-surface);
+  --color-success: #6fae8a;
+  --color-success-content: var(--lofi-night-surface);
+  --color-warning: var(--lofi-night-lamp);
+  --color-warning-content: var(--lofi-night-surface);
+  --color-error: #cf7f7f;
+  --color-error-content: var(--lofi-night-surface);
+  --radius-selector: 1rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 1;
+}
+@plugin "daisyui/theme" {
+  name: "lofi-art-day";
+  default: true;
+  color-scheme: light;
+  --color-base-100: var(--lofi-day-surface);
+  --color-base-200: var(--lofi-day-raised);
+  --color-base-300: var(--lofi-day-panel);
+  --color-base-content: var(--lofi-day-text);
+  --color-primary: var(--lofi-day-lamp);
+  --color-primary-content: var(--lofi-day-surface);
+  --color-secondary: var(--lofi-day-teal);
+  --color-secondary-content: var(--lofi-day-surface);
+  --color-accent: var(--lofi-day-glow);
+  --color-accent-content: var(--lofi-day-surface);
+  --color-neutral: var(--lofi-day-muted);
+  --color-neutral-content: var(--lofi-day-text);
+  --color-info: var(--lofi-day-teal);
+  --color-info-content: var(--lofi-day-surface);
+  --color-success: #3d7a55;
+  --color-success-content: var(--lofi-day-surface);
+  --color-warning: var(--lofi-day-lamp);
+  --color-warning-content: var(--lofi-day-surface);
+  --color-error: #a14c4c;
+  --color-error-content: var(--lofi-day-surface);
+  --radius-selector: 1rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 1;
 }

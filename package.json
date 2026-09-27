@@ -6,11 +6,13 @@
     "dev": "next dev --port 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "biome ci --use-editorconfig=true --css-parse-tailwind-directives=true src",
-    "format": "biome check --write --use-editorconfig=true --css-parse-tailwind-directives=true src",
-    "docs:dev": "blume dev",
-    "docs:build": "blume build",
-    "docs:preview": "blume preview --port 4000"
+    "lint": "biome ci --use-editorconfig=true --css-parse-tailwind-directives=true src theme.css blume.config.ts next.config.ts postcss.config.mjs",
+    "format": "biome check --write --use-editorconfig=true --css-parse-tailwind-directives=true src theme.css blume.config.ts next.config.ts postcss.config.mjs",
+    "docs:prepare": "node -e \"const fs=require('node:fs');fs.mkdirSync('public',{recursive:true});fs.copyFileSync('src/app/icon.svg','public/favicon.svg')\"",
+    "predocs:dev": "npm run docs:prepare",
+    "docs:dev": "blume dev --port 4000",
+    "predocs:build": "npm run docs:prepare",
+    "docs:build": "blume build"
   },
   "dependencies": {
     "next": "16.3.6",

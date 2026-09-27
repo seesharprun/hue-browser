@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Nunito_Sans } from "next/font/google";
+import { ThemeToggle } from "../components/theme-toggle";
+import { themeInitScript } from "../lib/theme";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const nunito = Nunito_Sans({
+  variable: "--font-nunito",
   subsets: ["latin"],
 });
 
@@ -17,14 +14,32 @@ export const metadata: Metadata = {
   description: "Manage Philips Hue bridges, rooms, and devices",
 };
 
+/* The saved preference is applied before hydration; without one daisyUI
+   follows the system color scheme. Only the root data-theme may differ from
+   server markup, so suppress that expected hydration warning here. */
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      data-theme="lofi"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${nunito.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head>
+        <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: the theme must be applied before the first paint
+          dangerouslySetInnerHTML={{ __html: themeInitScript }}
+        />
+      </head>
+      <body className="min-h-full flex flex-col">
+        <header className="sticky top-0 z-40 flex h-16 items-center gap-3 bg-base-100/90 px-4 backdrop-blur md:px-6">
+          <span className="min-w-0 truncate font-semibold text-base">
+            Hue Browser
+          </span>
+          <div className="flex-1" />
+          <ThemeToggle />
+        </header>
+        {children}
+      </body>
     </html>
   );
 }
