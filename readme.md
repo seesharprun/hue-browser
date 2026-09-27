@@ -34,7 +34,7 @@ Each task has a dedicated npm script. Linting and formatting are handled by Biom
 | `npm run build`     | Create a production build and type check the project           |
 | `npm start`         | Serve a production build that was already created              |
 | `npm run lint`      | Check formatting and lint rules without writing                |
-| `npm test`          | Test bridge pairing and browser storage helpers                |
+| `npm test`          | Test bridge discovery, pairing, and browser storage helpers    |
 | `npm run format`    | Apply formatting and safe lint fixes                           |
 | `npm run docs:dev`  | Start the documentation site with hot reloading                |
 | `npm run docs:build`| Build the documentation site into `dist`                        |
@@ -61,7 +61,7 @@ Either way the app is available at <http://localhost:3000>. Use a different host
 
 ## Connect to a bridge
 
-Open the app and connect a Philips Hue bridge. Follow the [bridge connection guide](https://seesharprun.github.io/hue-browser/usage/connect-bridges) for both methods, physical button pairing, and what to expect afterward.
+Open the app and connect a Philips Hue bridge. Follow the [bridge connection guide](https://seesharprun.github.io/hue-browser/usage/connect-bridges) for local mDNS search, Philips Hue online discovery, manual IP entry, physical button pairing, and what to expect afterward.
 
 The [device browsing guide](https://seesharprun.github.io/hue-browser/usage/browse-devices) explains the dashboard, column sorting and filtering, room and zone grouping, and the identify and test controls on each row.
 
