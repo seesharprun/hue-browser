@@ -48,6 +48,12 @@ test("ignores invalid mDNS bridge records", () => {
     ),
     [],
   );
+  assert.deepEqual(
+    parseMdnsResponse(
+      response([record("_hue._tcp.local", 12, Buffer.from([0xc0]))]),
+    ),
+    [],
+  );
 });
 
 function response(records: Buffer[]) {

@@ -126,12 +126,18 @@ function readName(
   while (cursor < message.length) {
     const length = message[cursor];
     if ((length & 0xc0) === 0xc0) {
+      if (cursor + 1 >= message.length) {
+        return { value: clean(labels), offset: message.length };
+      }
       const pointer = ((length & 0x3f) << 8) | message[cursor + 1];
       labels.push(readName(message, pointer, seen + 1).value);
       return { value: clean(labels), offset: cursor + 2 };
     }
     cursor += 1;
     if (length === 0) return { value: clean(labels), offset: cursor };
+    if (cursor + length > message.length) {
+      return { value: clean(labels), offset: message.length };
+    }
     labels.push(message.subarray(cursor, cursor + length).toString("utf8"));
     cursor += length;
   }

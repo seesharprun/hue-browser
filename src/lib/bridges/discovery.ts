@@ -1,12 +1,13 @@
 import { discoveryError } from "./discovery-error";
-import { discoveryIssue, mergeBridgeCandidates } from "./discovery-result.ts";
-import { discoverMdnsBridges } from "./mdns.ts";
+import { discoveryIssue, mergeBridgeCandidates } from "./discovery-result";
+import { discoverMdnsBridges } from "./mdns";
 import {
   type BridgeCandidate,
   BridgeError,
   bridgeCandidates,
+  type DiscoveryIssue,
   type DiscoveryResult,
-} from "./types.ts";
+} from "./types";
 
 export async function discoverBridges(): Promise<DiscoveryResult> {
   const [online, local] = await Promise.allSettled([
@@ -14,7 +15,7 @@ export async function discoverBridges(): Promise<DiscoveryResult> {
     discoverMdnsBridges(),
   ]);
   const groups: BridgeCandidate[][] = [];
-  const errors = [];
+  const errors: DiscoveryIssue[] = [];
   if (online.status === "fulfilled") groups.push(online.value);
   else errors.push(discoveryIssue("online", online.reason));
   if (local.status === "fulfilled") groups.push(local.value);
