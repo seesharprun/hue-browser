@@ -15,7 +15,7 @@
     "predocs:build": "npm run docs:prepare",
     "docs:build": "blume build",
     "test:integration": "npm run build && playwright test --forbid-only",
-    "postbuild": "node -e \"const fs=require('node:fs');fs.rmSync('.next/standalone/.next/static',{recursive:true,force:true});fs.cpSync('.next/static','.next/standalone/.next/static',{recursive:true});if(fs.existsSync('public'))fs.cpSync('public','.next/standalone/public',{recursive:true});\""
+    "postbuild": "node src/scripts/prepare-standalone.mjs"
   },
   "dependencies": {
     "next": "16.3.6",

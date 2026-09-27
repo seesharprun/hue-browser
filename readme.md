@@ -32,7 +32,7 @@ Each task has a dedicated npm script. Linting and formatting are handled by Biom
 | ------- | ----------- |
 | `npm run dev` | Start the development server with hot reloading |
 | `npm run build` | Create a production build and type check the project |
-| `npm start` | Serve a production build that was already created |
+| `npm start` | Serve the standalone production build that was already created |
 | `npm run lint` | Check formatting and lint rules without writing |
 | `npm test` | Test bridge pairing and browser storage helpers |
 | `npm run test:integration` | Build the app and run Playwright dashboard scenarios |

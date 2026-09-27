@@ -1,7 +1,7 @@
 import { expect, type Page } from "@playwright/test";
 import fixture from "../fixtures/bridge-devices.json";
 
-export const data = fixture;
+export const fixtureData = fixture;
 export const bridge = fixture.bridges[0];
 
 export async function seedStorage(page: Page, bridges = fixture.bridges) {

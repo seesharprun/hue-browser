@@ -1,22 +1,24 @@
 import { expect, test } from "@playwright/test";
-import {
-  data,
-  groupBy,
-  openDashboard,
-  routeFixtureDevices,
-  seedStorage,
-} from "./helpers";
+import { fixtureData, groupBy, openDashboard, seedStorage } from "./helpers";
 
 test("wizard navigation, loading state, stats, groups, sorting, and filters work", async ({
   page,
 }) => {
   await seedStorage(page);
-  await routeFixtureDevices(page, 300);
+  let releaseDevices: () => void = () => undefined;
+  const devicesReady = new Promise<void>((resolve) => {
+    releaseDevices = resolve;
+  });
+  await page.route("**/api/bridges/devices", async (route) => {
+    await devicesReady;
+    await route.fulfill({ json: fixtureData.bridgeDevices });
+  });
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Devices" })).toBeVisible();
   await expect(
     page.locator(".aura").filter({ has: page.locator(".skeleton") }),
   ).toBeVisible();
+  releaseDevices();
   await expect(
     stat(page, "Devices").getByText("4", { exact: true }),
   ).toBeVisible();
@@ -37,7 +39,7 @@ test("wizard navigation, loading state, stats, groups, sorting, and filters work
   const names = page.locator(
     "tbody tr:not(:has(th)) td:first-child input.input",
   );
-  await expect(names).toHaveCount(data.bridgeDevices.devices.length);
+  await expect(names).toHaveCount(fixtureData.bridgeDevices.devices.length);
   await expect(names.nth(0)).toHaveValue("Desk Strip");
   await page.getByRole("button", { name: /Name.*Reverse this column/ }).click();
   await expect(names.nth(0)).toHaveValue("Window Lamp");
@@ -46,7 +48,7 @@ test("wizard navigation, loading state, stats, groups, sorting, and filters work
     .locator("ul[popover]:popover-open")
     .getByText("motion sensor")
     .click();
-  await expect(page.getByLabel("Name for Rain Sensor")).toBeVisible();
+  await expect(page.getByLabel("Name for Hall Motion Sensor")).toBeVisible();
   await expect(page.getByLabel("Name for Desk Strip")).toHaveCount(0);
   await page.getByRole("button", { name: "Clear filters" }).click();
   await expect(page.getByLabel("Name for Desk Strip")).toBeVisible();

@@ -91,7 +91,7 @@
       {
         "id": "12345678-1234-4234-8234-123456789abc",
         "bridgeId": "0011223344556677",
-        "name": "Rain Sensor",
+        "name": "Hall Motion Sensor",
         "product": "Hue motion sensor",
         "model": "SML001",
         "type": "motion_sensor",

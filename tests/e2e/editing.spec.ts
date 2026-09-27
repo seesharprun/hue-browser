@@ -76,8 +76,12 @@ test("grouped modal editing opens, blocks zones for non-lights, and closes witho
   await expect(kitchenDialog).toBeVisible();
   await expect(kitchenDialog.getByLabel("Reading")).toBeVisible();
   await page.getByRole("button", { name: "Cancel" }).click();
-  await row(page, "Rain Sensor").getByRole("button", { name: /Edit/ }).click();
-  const sensorDialog = page.getByRole("dialog", { name: "Edit Rain Sensor" });
+  await row(page, "Hall Motion Sensor")
+    .getByRole("button", { name: /Edit/ })
+    .click();
+  const sensorDialog = page.getByRole("dialog", {
+    name: "Edit Hall Motion Sensor",
+  });
   await expect(
     sensorDialog.getByText(
       "This device has no light, so it cannot join a zone.",

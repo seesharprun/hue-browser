@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "../styles/lofi-art.css";
 @theme {
-  --font-sans: var(--lofi-font-fallbacks);
+  --font-sans: "Nunito Sans", var(--lofi-font-fallbacks);
   --font-display: var(--font-sans);
 }
 @plugin "daisyui" {
