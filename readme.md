@@ -28,17 +28,20 @@ The app runs at <http://localhost:3000>.
 
 Each task has a dedicated npm script. Linting and formatting are handled by Biome, type checking happens as part of the build, and the documentation site has its own set of commands.
 
-| Command             | Description                                                    |
-| ------------------- | -------------------------------------------------------------- |
-| `npm run dev`       | Start the development server with hot reloading                |
-| `npm run build`     | Create a production build and type check the project           |
-| `npm start`         | Serve a production build that was already created              |
-| `npm run lint`      | Check formatting and lint rules without writing                |
-| `npm test`          | Test bridge pairing and browser storage helpers                |
-| `npm run format`    | Apply formatting and safe lint fixes                           |
-| `npm run docs:dev`  | Start the documentation site with hot reloading                |
-| `npm run docs:build`| Build the documentation site into `dist`                        |
+| Command | Description |
+| ------- | ----------- |
+| `npm run dev` | Start the development server with hot reloading |
+| `npm run build` | Create a production build and type check the project |
+| `npm start` | Serve a production build that was already created |
+| `npm run lint` | Check formatting and lint rules without writing |
+| `npm test` | Test bridge pairing and browser storage helpers |
+| `npm run test:integration` | Build the app and run Playwright dashboard scenarios |
+| `npm run format` | Apply formatting and safe lint fixes |
+| `npm run docs:dev` | Start the documentation site with hot reloading |
+| `npm run docs:build` | Build the documentation site into `dist` |
 | `npm run docs:preview` | Serve the built documentation site with its published base path |
+
+The Playwright integration suite uses the committed fixture at `tests/fixtures/bridge-devices.json`. Run `npm run test:integration` to reproduce the CI browser scenarios locally without a real Philips Hue bridge.
 
 Use `npm run docs:preview` rather than serving `dist` directly. The documentation site is published to a project subpath, so its asset links only resolve when the preview server applies that same base path.
 
@@ -71,7 +74,7 @@ GitHub Actions workflows keep the project healthy and distribute it. All of them
 
 | Workflow | Trigger | Purpose |
 | -------- | ------- | ------- |
-| `continuous-integration.yml` | Pull requests and pushes to `main` | Installs dependencies with `npm ci`, then lints, builds, and confirms the container image and documentation site still build |
+| `continuous-integration.yml` | Pull requests and pushes to `main` | Installs dependencies with `npm ci`, then lints, tests, builds, runs Playwright integration tests, and confirms the container image and documentation site still build |
 | `continuous-deployment-container.yml` | Pushes to `main` | Publishes the multi-architecture image to the GitHub Container Registry as `latest` and as the commit SHA |
 | `continuous-deployment-docs.yml` | Pushes to `main` | Builds the documentation site as an artifact, then deploys that artifact to GitHub Pages |
 
@@ -102,6 +105,7 @@ Hue Browser is built on the work of these projects.
 | [Next.js](https://nextjs.org) | React framework, routing, and API layer |
 | [React](https://react.dev) | User interface library |
 | [TypeScript](https://www.typescriptlang.org) | Typed language for application code |
+| [Playwright](https://playwright.dev) | Integration testing in a browser |
 | [Tailwind CSS](https://tailwindcss.com) | Utility-first styling |
 | [daisyUI](https://daisyui.com) | Component and theme layer for Tailwind CSS |
 | [Biome](https://biomejs.dev) | Linting and formatting |

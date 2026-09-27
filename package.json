@@ -5,15 +5,16 @@
   "scripts": {
     "dev": "next dev --port 3000",
     "build": "next build",
-    "start": "next start",
-    "lint": "biome ci --use-editorconfig=true --css-parse-tailwind-directives=true src theme.css blume.config.ts next.config.ts postcss.config.mjs",
+    "start": "mkdir -p .next/standalone/.next .next/standalone/public && cp -R .next/static .next/standalone/.next/static && if [ -d public ]; then cp -R public/. .next/standalone/public/; fi && PORT=3000 HOSTNAME=127.0.0.1 node .next/standalone/server.js",
+    "lint": "biome ci --use-editorconfig=true --css-parse-tailwind-directives=true src tests theme.css blume.config.ts next.config.ts playwright.config.ts postcss.config.mjs",
     "test": "node --test src/lib/bridges/types.test.ts src/lib/bridges/discovery-error.test.ts src/lib/devices/parse.test.ts src/lib/devices/commands.test.ts src/lib/devices/edits.test.ts src/lib/devices/pending.test.ts",
-    "format": "biome check --write --use-editorconfig=true --css-parse-tailwind-directives=true src theme.css blume.config.ts next.config.ts postcss.config.mjs",
+    "format": "biome check --write --use-editorconfig=true --css-parse-tailwind-directives=true src tests theme.css blume.config.ts next.config.ts playwright.config.ts postcss.config.mjs",
     "docs:prepare": "node -e \"const fs=require('node:fs');fs.mkdirSync('public',{recursive:true});fs.copyFileSync('src/app/icon.svg','public/favicon.svg')\"",
     "predocs:dev": "npm run docs:prepare",
     "docs:dev": "blume dev --port 4000",
     "predocs:build": "npm run docs:prepare",
-    "docs:build": "blume build"
+    "docs:build": "blume build",
+    "test:integration": "npm run build && playwright test --forbid-only"
   },
   "dependencies": {
     "next": "16.3.6",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^20",
