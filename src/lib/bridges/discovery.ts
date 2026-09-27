@@ -1,7 +1,28 @@
 import { discoveryError } from "./discovery-error";
-import { type BridgeCandidate, BridgeError, bridgeCandidates } from "./types";
+import { discoveryIssue, mergeBridgeCandidates } from "./discovery-result.ts";
+import { discoverMdnsBridges } from "./mdns.ts";
+import {
+  type BridgeCandidate,
+  BridgeError,
+  bridgeCandidates,
+  type DiscoveryResult,
+} from "./types.ts";
 
-export async function discoverBridges(): Promise<BridgeCandidate[]> {
+export async function discoverBridges(): Promise<DiscoveryResult> {
+  const [online, local] = await Promise.allSettled([
+    discoverOnlineBridges(),
+    discoverMdnsBridges(),
+  ]);
+  const groups: BridgeCandidate[][] = [];
+  const errors = [];
+  if (online.status === "fulfilled") groups.push(online.value);
+  else errors.push(discoveryIssue("online", online.reason));
+  if (local.status === "fulfilled") groups.push(local.value);
+  else errors.push(discoveryIssue("local mDNS", local.reason));
+  return { bridges: mergeBridgeCandidates(groups), errors };
+}
+
+async function discoverOnlineBridges(): Promise<BridgeCandidate[]> {
   let response: Response;
   try {
     response = await fetch("https://discovery.meethue.com/", {

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { discoverBridges, identifyBridge } from "./browser";
+import { discoveryErrorMessage } from "./discovery-result.ts";
 import type { BridgeCandidate, DiscoveredBridge } from "./types";
 
 async function resolveName(
@@ -43,8 +44,10 @@ export function useDiscovery() {
     setError("");
     setSearching(true);
     try {
-      const candidates = await discoverBridges();
+      const result = await discoverBridges();
+      const candidates = result.bridges;
       if (current !== generation.current) return;
+      setError(discoveryErrorMessage(result));
       setFound(
         candidates.map((candidate) => ({
           ...candidate,

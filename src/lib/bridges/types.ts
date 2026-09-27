@@ -15,6 +15,16 @@ export type BridgeCandidate = {
   address: string;
 };
 
+export type DiscoveryIssue = {
+  method: "online" | "local mDNS";
+  message: string;
+};
+
+export type DiscoveryResult = {
+  bridges: BridgeCandidate[];
+  errors: DiscoveryIssue[];
+};
+
 export type DiscoveredBridge = BridgeCandidate & {
   name: string | null;
   error: string | null;

@@ -1,8 +1,9 @@
 import type { DeviceCommand } from "../devices/commands";
 import type { EditRequest } from "../devices/edits";
 import type { BridgeDevices, DeviceRow, GroupOption } from "../devices/types";
+import { isDiscoveryResult } from "./browser-discovery.ts";
 import { isBridge, isPairedBridge, isRecord } from "./storage";
-import type { Bridge, BridgeCandidate, PairedBridge } from "./types";
+import type { Bridge, DiscoveryResult, PairedBridge } from "./types";
 
 async function callApi(path: string, body?: unknown): Promise<unknown> {
   const response = await fetch(`/api/bridges/${path}`, {
@@ -22,18 +23,9 @@ async function callApi(path: string, body?: unknown): Promise<unknown> {
   return value;
 }
 
-export async function discoverBridges(): Promise<BridgeCandidate[]> {
+export async function discoverBridges(): Promise<DiscoveryResult> {
   const value = await callApi("discover");
-  if (
-    !Array.isArray(value) ||
-    !value.every(
-      (item: unknown) =>
-        isRecord(item) &&
-        typeof item.id === "string" &&
-        /^[a-f0-9]{16}$/i.test(item.id) &&
-        typeof item.address === "string",
-    )
-  ) {
+  if (!isDiscoveryResult(value)) {
     throw new Error("The discovery response was invalid.");
   }
   return value;
