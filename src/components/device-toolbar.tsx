@@ -8,16 +8,22 @@ export function DeviceToolbar({
   view,
   loading,
   pending,
+  assistant,
   onRefresh,
 }: {
   view: DeviceView;
   loading: boolean;
   /** Only the flat grouping collects pending edits. */
   pending: PendingEdits | null;
+  /** The agent drawer trigger, rendered beside the filters. */
+  assistant?: React.ReactNode;
   onRefresh: () => void;
 }) {
   return (
     <div className="mb-5 flex flex-wrap items-center gap-3">
+      {/* Sits to the left of the search box to match the side the drawer
+          slides in from. */}
+      {assistant}
       <label className="min-w-48 flex-1">
         <span className="sr-only">Search devices</span>
         {/* The aura keeps turning while the bridges answer, so a slow network

@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome ci --use-editorconfig=true --css-parse-tailwind-directives=true src theme.css blume.config.ts next.config.ts postcss.config.mjs",
-    "test": "node --test src/lib/bridges/types.test.ts src/lib/bridges/discovery-error.test.ts src/lib/devices/parse.test.ts src/lib/devices/commands.test.ts src/lib/devices/edits.test.ts src/lib/devices/pending.test.ts",
+    "test": "node --test src/lib/bridges/types.test.ts src/lib/bridges/discovery-error.test.ts src/lib/devices/parse.test.ts src/lib/devices/commands.test.ts src/lib/devices/edits.test.ts src/lib/devices/pending.test.ts src/lib/agent/plan.test.ts src/lib/agent/apply.test.ts",
     "format": "biome check --write --use-editorconfig=true --css-parse-tailwind-directives=true src theme.css blume.config.ts next.config.ts postcss.config.mjs",
     "docs:prepare": "node -e \"const fs=require('node:fs');fs.mkdirSync('public',{recursive:true});fs.copyFileSync('src/app/icon.svg','public/favicon.svg')\"",
     "predocs:dev": "npm run docs:prepare",
@@ -16,6 +16,7 @@
     "docs:build": "blume build"
   },
   "dependencies": {
+    "@huggingface/transformers": "^4.3.0",
     "next": "16.3.6",
     "react": "19.2.8",
     "react-dom": "19.2.8"

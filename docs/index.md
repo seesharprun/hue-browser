@@ -14,10 +14,11 @@ You run Hue Browser on your own computer or home server. It talks to your Philip
 Hue Browser focuses on keeping your lights organized rather than setting scenes or moods.
 
 - See every light across all of your Philips Hue bridges in one place
-- Rename lights, one at a time or many at once
-- Move lights into the correct rooms
-- Filter and group lights by room and by type
+- Rename lights, one at a time in a form or many at once in a spreadsheet
+- Move lights into the correct rooms and add them to zones
+- Sort, search, filter, and group lights by room, zone, type, and product
 - Flash or switch a light to confirm which fixture you are looking at
+- Ask a built-in assistant, in preview, to draft a bulk rename or regrouping for you
 
 ## What you need
 
@@ -27,9 +28,11 @@ You need a few things before you start.
 - A computer on that same network that can run Docker
 - The button on top of your Philips Hue bridge, which you press once to grant access
 
+The assistant is a preview feature and it is optional. It needs a browser with WebGPU, such as a current version of Chrome or Edge, and it downloads about 800 MB the first time you open it. Because the model is small it sometimes drafts a change wider than you asked for, so read the review dialog before applying. Everything else works without it.
+
 ## Get started
 
-Read the [installation guide](/installation) to run the app, then [connect a bridge](/usage/connect-bridges) and [browse your devices](/usage/browse-devices). Editing and testing lights are still being built.
+Read the [installation guide](/installation) to run the app, then [connect a bridge](/usage/connect-bridges) and [browse your devices](/usage/browse-devices). When you are ready to reorganize everything at once, see [making bulk changes](/usage/bulk-changes).
 
 ## Appearance
 

@@ -9,6 +9,7 @@ import { useDevices } from "../lib/devices/use-devices";
 import { useDeviceEdit } from "../lib/devices/use-edit";
 import { usePendingEdits } from "../lib/devices/use-pending";
 import { useToasts } from "../lib/ui/toasts";
+import { AgentDrawer } from "./agent-drawer";
 import { BridgeFooter } from "./bridge-footer";
 import { DeviceEditModal } from "./device-edit-modal";
 import { DeviceSkeleton } from "./device-skeleton";
@@ -73,6 +74,16 @@ export function DeviceDashboard({ bridges }: { bridges: PairedBridge[] }) {
         view={view}
         loading={loading}
         pending={spreadsheet ? pendingEdits : null}
+        assistant={
+          rows.length > 0 ? (
+            <AgentDrawer
+              bridges={bridges}
+              rows={rows}
+              groups={groups}
+              refresh={refresh}
+            />
+          ) : null
+        }
         onRefresh={refresh}
       />
       {/* Placeholder groups keep the page from collapsing to blank while the
