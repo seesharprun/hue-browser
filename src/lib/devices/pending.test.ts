@@ -69,4 +69,5 @@ testPending("rejects a name that is blank, whitespace, or too long", () => {
 testPending("accepts a name that fits once trimmed", () => {
   pendingAssert.ok(valid(draft({ name: "  Pendant  " })));
   pendingAssert.ok(valid(draft({ name: "x".repeat(32) })));
+  pendingAssert.ok(valid(draft({ name: ` ${"x".repeat(32)} ` })));
 });

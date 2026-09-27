@@ -2,8 +2,8 @@ import {
   bridgeFailure,
   bridgeInput,
   bridgeResponse,
-} from "../../../../lib/bridges/route-error";
-import { pairBridge } from "../../../../lib/bridges/transport";
+} from "../../../../lib/bridges/route-error.ts";
+import { pairBridge } from "../../../../lib/bridges/transport.ts";
 
 export const runtime = "nodejs";
 

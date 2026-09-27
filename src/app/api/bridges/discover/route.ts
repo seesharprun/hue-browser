@@ -1,8 +1,8 @@
-import { discoverBridges } from "../../../../lib/bridges/discovery";
+import { discoverBridges } from "../../../../lib/bridges/discovery.ts";
 import {
   bridgeFailure,
   bridgeResponse,
-} from "../../../../lib/bridges/route-error";
+} from "../../../../lib/bridges/route-error.ts";
 
 export const runtime = "nodejs";
 

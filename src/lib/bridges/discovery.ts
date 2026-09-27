@@ -1,5 +1,9 @@
-import { discoveryError } from "./discovery-error";
-import { type BridgeCandidate, BridgeError, bridgeCandidates } from "./types";
+import { discoveryError } from "./discovery-error.ts";
+import {
+  type BridgeCandidate,
+  BridgeError,
+  bridgeCandidates,
+} from "./types.ts";
 
 export async function discoverBridges(): Promise<BridgeCandidate[]> {
   let response: Response;

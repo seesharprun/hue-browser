@@ -1,4 +1,4 @@
-import { type ColumnKey, columns, searchText, UNASSIGNED } from "./columns";
+import { type ColumnKey, columns, searchText, UNASSIGNED } from "./columns.ts";
 import type { DeviceRow } from "./types";
 
 export type Filters = Partial<Record<ColumnKey, string[]>>;
@@ -14,8 +14,13 @@ export function groupOrder(a: string, b: string) {
 }
 
 /** Anchors and scroll targets need an identifier a room or zone name cannot break. */
-export const groupId = (value: string) =>
-  `group-${value.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "all"}`;
+export const groupId = (value: string) => {
+  const safe = value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  return `group-${safe || "all"}`;
+};
 
 /** `exclude` leaves one column unfiltered so its own menu keeps every choice. */
 export function matches(
@@ -24,7 +29,7 @@ export function matches(
   filters: Filters,
   exclude?: ColumnKey,
 ) {
-  if (term && !searchText(row).includes(term)) return false;
+  if (term && !searchText(row).includes(term.toLowerCase())) return false;
   return columns.every((item) => {
     const selected = filters[item.key];
     if (item.key === exclude || !selected?.length) return true;

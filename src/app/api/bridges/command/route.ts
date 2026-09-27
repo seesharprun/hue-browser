@@ -1,11 +1,11 @@
-import { sendBridgeCommand } from "../../../../lib/bridges/resources";
+import { sendBridgeCommand } from "../../../../lib/bridges/resources.ts";
 import {
   bridgeFailure,
   bridgeInput,
   bridgeResponse,
-} from "../../../../lib/bridges/route-error";
-import { BridgeError, isRecord } from "../../../../lib/bridges/types";
-import { commandRequest, isCommand } from "../../../../lib/devices/commands";
+} from "../../../../lib/bridges/route-error.ts";
+import { BridgeError, isRecord } from "../../../../lib/bridges/types.ts";
+import { commandRequest, isCommand } from "../../../../lib/devices/commands.ts";
 
 export const runtime = "nodejs";
 
@@ -15,8 +15,10 @@ const RESOURCE = /^[a-f0-9-]{36}$/i;
 
 export async function POST(request: Request) {
   try {
-    const body = await request.clone().json();
-    const { address, id, applicationKey } = await bridgeInput(request, true);
+    const { address, id, applicationKey, body } = await bridgeInput(
+      request,
+      true,
+    );
     if (
       typeof applicationKey !== "string" ||
       !/^[a-zA-Z0-9-]{16,128}$/.test(applicationKey)
