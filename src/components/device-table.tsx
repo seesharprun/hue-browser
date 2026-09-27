@@ -66,8 +66,9 @@ export function DeviceTable({
       )}
       <div className="overflow-x-auto">
         {/* Cells size to their content and the section scrolls sideways, so a
-            long product name never stacks onto a second line. */}
-        <table className="table table-zebra whitespace-nowrap">
+            long product name never stacks onto a second line. A wide screen
+            gets the roomier row height. */}
+        <table className="table table-zebra table-sm whitespace-nowrap xl:table-md">
           <thead>
             <tr>
               {view.visibleColumns.map((item) => (
