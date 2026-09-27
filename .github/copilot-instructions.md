@@ -113,6 +113,8 @@ This repository is a web-based React application for managing residential Philip
 - Leave `npm run dev` to the developer. Start a development server only to verify something, then stop it.
 - Do not open previews of the application or the documentation site in the app, and do not start servers to show the developer a result. The developer runs and watches these themselves. Verify work through builds, linting, and command line requests instead, and simply report what changed.
 - Pin a fixed port in every script that serves something, rather than letting the tool pick a port or fall forward to the next free one. The application development server uses port 3000, the documentation preview server uses port 4000, and the documentation development server uses port 4001. Use those ports when verifying, and keep any new serving script on its own fixed port.
+- Work on a fix branch only for as long as the fix takes. Once the work is merged or otherwise finished, switch back to the default branch and leave the checkout there.
+- Treat a line-ending-only difference as no change at all. Check `git diff --stat` before reporting that files are modified, because formatting a file can rewrite its line endings without altering its content.
 
 ## Conflicting requests
 

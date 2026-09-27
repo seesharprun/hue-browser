@@ -75,6 +75,10 @@ export function deviceRows(
   for (const item of resources) {
     if (!isRecord(item) || item.type !== "device") continue;
     const parsed = device(item);
+    // A bridge is itself a device resource, but it is hardware the table
+    // reports on rather than a device the table manages, so it is left out.
+    if (parsed.services.some((service) => text(service.rtype) === "bridge"))
+      continue;
     const room = rooms.get(parsed.id);
     const row: DeviceRow = {
       id: parsed.id,
