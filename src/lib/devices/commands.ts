@@ -35,6 +35,7 @@ function gamma(channel: number) {
     : channel / 12.92;
 }
 
+/** Converts three- or six-digit hex colors and throws on any other format. */
 export function toChromaticity(hex: string) {
   const short = SHORT_HEX.test(hex);
   if (!HEX.test(hex) && !short) {
