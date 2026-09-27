@@ -5,11 +5,19 @@ export const emptyValue = "__empty__";
 
 type Option = { id: string; name: string };
 
-export function MigrationHeader({ onClose }: { onClose: () => void }) {
+export function MigrationHeader({
+  titleId,
+  onClose,
+}: {
+  titleId: string;
+  onClose: () => void;
+}) {
   return (
     <div className="mb-4 flex items-start justify-between gap-3">
       <div>
-        <h2 className="text-lg font-semibold">Migrate devices</h2>
+        <h2 id={titleId} className="text-lg font-semibold">
+          Migrate devices
+        </h2>
         <p className="text-sm text-base-content/70">
           Preview every device before moving a source group into another group
           or emptying it.

@@ -103,7 +103,7 @@ export function planMigration(resources: unknown[], request: MigrationRequest) {
   const destinationId = destination?.id;
   const planned: PlannedDevice[] = [];
 
-  for (const member of [...source.children]) {
+  for (const member of source.children) {
     const device =
       request.groupType === "room" ? records.get(member) : byLight.get(member);
     if (!device)
@@ -116,7 +116,9 @@ export function planMigration(resources: unknown[], request: MigrationRequest) {
     const updates: PlannedDevice["updates"] = [];
     const sourceIndex = sourceChildren.indexOf(rid);
     if (sourceIndex === -1) {
-      throw new DeviceDataError("The source group changed while planning.");
+      throw new DeviceDataError(
+        "The source group contains duplicate or unexpected members.",
+      );
     }
     sourceChildren.splice(sourceIndex, 1);
     updates.push({
