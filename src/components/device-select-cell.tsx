@@ -30,7 +30,9 @@ export function SelectAllCheckbox({
 /**
  * A plain click toggles one row; shift-click extends the range from the last
  * row clicked. The default toggle is suppressed so the range logic, not the
- * browser, decides the resulting checked state.
+ * browser, decides the resulting checked state. Pressing Space on a focused
+ * checkbox also dispatches a click event per the HTML activation behavior,
+ * so this stays keyboard accessible without a separate key handler.
  */
 export function SelectRowCheckbox({
   row,
