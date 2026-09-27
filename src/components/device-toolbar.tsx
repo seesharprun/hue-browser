@@ -2,19 +2,23 @@
 
 import type { DeviceView } from "../lib/devices/use-device-view";
 import type { PendingEdits } from "../lib/devices/use-pending";
-import { RefreshIcon, SaveIcon } from "./icons";
+import { GroupIcon, RefreshIcon, SaveIcon } from "./icons";
 
 export function DeviceToolbar({
   view,
   loading,
   pending,
   onRefresh,
+  onMigrate,
+  canMigrate,
 }: {
   view: DeviceView;
   loading: boolean;
   /** Only the flat grouping collects pending edits. */
   pending: PendingEdits | null;
   onRefresh: () => void;
+  onMigrate: () => void;
+  canMigrate: boolean;
 }) {
   return (
     <div className="mb-5 flex flex-wrap items-center gap-3">
@@ -56,6 +60,15 @@ export function DeviceToolbar({
           disabled={!view.active}
         >
           Clear filters
+        </button>
+        <button
+          type="button"
+          className="btn btn-outline btn-sm join-item"
+          onClick={onMigrate}
+          disabled={!canMigrate}
+        >
+          <GroupIcon name="room" label="Migrate" size="size-[14px]" />
+          Migrate devices
         </button>
       </div>
       {pending && <PendingControls pending={pending} />}

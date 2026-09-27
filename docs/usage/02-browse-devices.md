@@ -68,6 +68,15 @@ In the **Rooms** and **Zones** groupings, select **Edit** at the end of a row to
 
 Only devices with a light can join a zone, because Hue zones group light services rather than whole devices. For a switch or sensor, the zone list is disabled and the dialog explains why.
 
+## Migrate a room or zone
+
+When a whole room or zone needs to move, use the migration flow instead of opening each device. The flow previews the devices first, then applies the move one device at a time and reports the result for each device.
+
+1. Select **Migrate devices** above the table.
+2. Choose the bridge, whether you are moving a room or zone, the source group, and the destination. Choose the empty destination option to remove every member from the source without deleting the group.
+3. Select **Preview** and review the exact devices that will move.
+4. Select **Move devices** to apply the migration. Review the result list afterward, because a bridge cannot roll back earlier changes if a later device fails.
+
 ## Edit many devices in the flat view
 
 The **Flat** grouping is the spreadsheet. It is built for data entry, so its name, room, and zone cells are always editable and nothing is sent to a bridge until you say so.

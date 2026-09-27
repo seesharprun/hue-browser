@@ -1,4 +1,9 @@
-import { collectGroups, DeviceDataError, isRecord, reference } from "./groups.ts";
+import {
+  collectGroups,
+  DeviceDataError,
+  isRecord,
+  reference,
+} from "./groups.ts";
 
 export type GroupKind = "room" | "zone";
 
@@ -17,7 +22,9 @@ export type MigrationResult = MigrationDevice & {
 
 type DeviceRecord = MigrationDevice & { light: string | null };
 
-type PlannedDevice = MigrationDevice & { updates: { path: string; body: unknown }[] };
+export type PlannedDevice = MigrationDevice & {
+  updates: { path: string; body: unknown }[];
+};
 
 const UUID = /^[a-f0-9-]{36}$/i;
 
@@ -28,7 +35,8 @@ export function isMigrationRequest(value: unknown): value is MigrationRequest {
     typeof value.sourceId === "string" &&
     UUID.test(value.sourceId) &&
     (value.destinationId === null ||
-      (typeof value.destinationId === "string" && UUID.test(value.destinationId)))
+      (typeof value.destinationId === "string" &&
+        UUID.test(value.destinationId)))
   );
 }
 
@@ -41,7 +49,8 @@ function deviceName(item: Record<string, unknown>) {
 function lightOf(item: Record<string, unknown>) {
   if (!Array.isArray(item.services)) return null;
   for (const service of item.services) {
-    if (isRecord(service) && service.rtype === "light") return reference(service);
+    if (isRecord(service) && service.rtype === "light")
+      return reference(service);
   }
   return null;
 }
@@ -50,9 +59,17 @@ function devices(resources: unknown[]) {
   const records = new Map<string, DeviceRecord>();
   const byLight = new Map<string, DeviceRecord>();
   for (const item of resources) {
-    if (!isRecord(item) || item.type !== "device" || typeof item.id !== "string")
+    if (
+      !isRecord(item) ||
+      item.type !== "device" ||
+      typeof item.id !== "string"
+    )
       continue;
-    const record = { id: item.id, name: deviceName(item), light: lightOf(item) };
+    const record = {
+      id: item.id,
+      name: deviceName(item),
+      light: lightOf(item),
+    };
     records.set(record.id, record);
     if (record.light) byLight.set(record.light, record);
   }
@@ -65,12 +82,15 @@ const refs = (children: string[], rtype: string) =>
 export function planMigration(resources: unknown[], request: MigrationRequest) {
   const groups = collectGroups(resources, request.groupType);
   const source = groups.find((group) => group.id === request.sourceId);
-  if (!source) throw new DeviceDataError("The source group is no longer on this bridge.");
+  if (!source)
+    throw new DeviceDataError("The source group is no longer on this bridge.");
   const destination = request.destinationId
     ? groups.find((group) => group.id === request.destinationId)
     : null;
   if (request.destinationId && !destination) {
-    throw new DeviceDataError("The destination group is no longer on this bridge.");
+    throw new DeviceDataError(
+      "The destination group is no longer on this bridge.",
+    );
   }
   if (destination?.id === source.id) {
     throw new DeviceDataError("Choose a different destination group.");
@@ -83,10 +103,15 @@ export function planMigration(resources: unknown[], request: MigrationRequest) {
   const planned: PlannedDevice[] = [];
 
   for (const member of [...source.children]) {
-    const device = request.groupType === "room" ? records.get(member) : byLight.get(member);
-    if (!device) throw new DeviceDataError("The source group contains an unknown device.");
+    const device =
+      request.groupType === "room" ? records.get(member) : byLight.get(member);
+    if (!device)
+      throw new DeviceDataError("The source group contains an unknown device.");
     const rid = request.groupType === "room" ? device.id : device.light;
-    if (!rid) throw new DeviceDataError("The source zone contains a device without a light.");
+    if (!rid)
+      throw new DeviceDataError(
+        "The source zone contains a device without a light.",
+      );
     const updates: PlannedDevice["updates"] = [];
     sourceChildren.splice(sourceChildren.indexOf(rid), 1);
     updates.push({
@@ -104,29 +129,4 @@ export function planMigration(resources: unknown[], request: MigrationRequest) {
   }
 
   return planned;
-}
-
-export async function applyMigration(
-  planned: ReturnType<typeof planMigration>,
-  send: (path: string, body: unknown) => Promise<void>,
-) {
-  const results: MigrationResult[] = [];
-  for (const [index, device] of planned.entries()) {
-    try {
-      for (const update of device.updates) await send(update.path, update.body);
-      results.push({ id: device.id, name: device.name, status: "moved" });
-    } catch (cause) {
-      results.push({
-        id: device.id,
-        name: device.name,
-        status: "failed",
-        error: cause instanceof Error ? cause.message : "The bridge request failed.",
-      });
-      for (const skipped of planned.slice(index + 1)) {
-        results.push({ id: skipped.id, name: skipped.name, status: "skipped" });
-      }
-      break;
-    }
-  }
-  return results;
 }

@@ -7,18 +7,28 @@ import { isRecord } from "./storage";
 import type { PairedBridge } from "./types";
 
 function isDevice(value: unknown): value is MigrationDevice {
-  return isRecord(value) && typeof value.id === "string" && typeof value.name === "string";
-}
-
-function isResult(value: unknown): value is MigrationResult {
   return (
-    isDevice(value) &&
-    (value.status === "moved" || value.status === "failed" || value.status === "skipped") &&
-    (value.error === undefined || typeof value.error === "string")
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    typeof value.name === "string"
   );
 }
 
-async function callMigration(bridge: PairedBridge, body: unknown) {
+function isResult(value: unknown): value is MigrationResult {
+  if (!isRecord(value) || !isDevice(value)) return false;
+  const result = value as { status?: unknown; error?: unknown };
+  return (
+    (result.status === "moved" ||
+      result.status === "failed" ||
+      result.status === "skipped") &&
+    (result.error === undefined || typeof result.error === "string")
+  );
+}
+
+async function callMigration(
+  bridge: PairedBridge,
+  body: Record<string, unknown>,
+) {
   const response = await fetch("/api/bridges/migrate", {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -32,7 +42,8 @@ async function callMigration(bridge: PairedBridge, body: unknown) {
   });
   const value: unknown = await response.json();
   if (!response.ok) {
-    if (isRecord(value) && typeof value.error === "string") throw new Error(value.error);
+    if (isRecord(value) && typeof value.error === "string")
+      throw new Error(value.error);
     throw new Error("The bridge migration failed. Try again.");
   }
   return value;
@@ -43,7 +54,11 @@ export async function previewMigration(
   migration: MigrationRequest,
 ) {
   const value = await callMigration(bridge, { migration, preview: true });
-  if (!isRecord(value) || !Array.isArray(value.devices) || !value.devices.every(isDevice)) {
+  if (
+    !isRecord(value) ||
+    !Array.isArray(value.devices) ||
+    !value.devices.every(isDevice)
+  ) {
     throw new Error("The migration preview response was invalid.");
   }
   return value.devices;
@@ -54,7 +69,11 @@ export async function applyBridgeMigration(
   migration: MigrationRequest,
 ) {
   const value = await callMigration(bridge, { migration });
-  if (!isRecord(value) || !Array.isArray(value.results) || !value.results.every(isResult)) {
+  if (
+    !isRecord(value) ||
+    !Array.isArray(value.results) ||
+    !value.results.every(isResult)
+  ) {
     throw new Error("The migration result response was invalid.");
   }
   return value.results;
