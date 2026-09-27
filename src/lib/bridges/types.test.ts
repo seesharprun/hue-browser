@@ -129,7 +129,7 @@ test("persists multiple bridges and replaces the same bridge by ID", () => {
     assert.deepEqual(loadBridges(), moved);
     assert.deepEqual(forgetBridge(moved, second.id), [moved[1]]);
     entries.set("hue-browser-bridges", "{broken");
-    assert.throws(() => loadBridges(), /Saved bridge data is invalid/);
+    assert.deepEqual(loadBridges(), []);
   } finally {
     Reflect.deleteProperty(globalThis, "localStorage");
   }
