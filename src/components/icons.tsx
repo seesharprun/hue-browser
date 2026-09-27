@@ -41,6 +41,12 @@ const ERROR = "M15 9l-6 6m0-6 6 6M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z";
 const SUCCESS = "m8 12.5 2.7 2.7L16 9.8M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z";
 const EDIT = "M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Zm10-13 4 4";
 const SAVE = "m5 13 4 4L19 7";
+const AGENT =
+  "M12 3v2m-7 3h14v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8Zm4 5h.01M15 13h.01M9.5 17h5";
+
+export function AgentIcon({ size = "size-[14px]" }: { size?: string }) {
+  return <Icon label="Agent" path={AGENT} size={size} />;
+}
 
 export function SaveIcon() {
   return <Icon label="Save" path={SAVE} size="size-[14px]" />;

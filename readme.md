@@ -4,6 +4,8 @@ Hue Browser is a web application for managing large residential Philips Hue depl
 
 This project presents your whole deployment as an industrial-style dashboard. You can browse every device across every bridge, filter and group by room and device type, and make bulk edits such as renaming lights or reassigning them to rooms as straightforward data entry in a single table. It also offers basic identify and test controls, so you can flash a light or toggle it to confirm you are editing the fixture you think you are.
 
+For the largest jobs there is an optional assistant, currently in preview. It is a small language model that runs entirely inside your browser, so you can describe a naming scheme in plain language, have it drafted across every device at once, and review the before and after values before anything is sent to a bridge. Because the model is small it occasionally misreads a request, so treat the review step as the real safeguard.
+
 Hue Browser talks to bridges through the local [Philips Hue REST API](https://github.com/openhue/openhue-api) and ships as a Docker container you can run on your own network.
 
 ## Prerequisites
@@ -65,6 +67,8 @@ Open the app and connect a Philips Hue bridge. Follow the [bridge connection gui
 
 The [device browsing guide](https://seesharprun.github.io/hue-browser/usage/browse-devices) explains the dashboard, column sorting and filtering, room and zone grouping, and the identify and test controls on each row.
 
+The [bulk changes guide](https://seesharprun.github.io/hue-browser/usage/bulk-changes) covers the in-browser assistant, including what it is allowed to draft and how the review step works.
+
 ## Continuous integration and deployment
 
 GitHub Actions workflows keep the project healthy and distribute it. All of them are defined under `.github/workflows`, with names spelled out in full so that continuous integration and continuous deployment are easy to tell apart.
@@ -85,12 +89,13 @@ The application icon lives in `src/app/icon.svg`. The documentation commands and
 
 ## Stack
 
-The application layers a React interface over an API layer that handles all bridge communication, which keeps device transformations independent of the interface that triggers them.
+The application layers a React interface over an API layer that handles all bridge communication, which keeps device transformations independent of the interface that triggers them. The assistant sits beside the interface rather than inside that path: it runs in a web worker on your own machine and only ever produces a draft, which the interface expands and sends through the same API layer once you approve it.
 
 ```mermaid
 flowchart TD
     A[Browser UI<br/>React and daisyUI] --> B[API layer<br/>Next.js route handlers]
     B --> C[Philips Hue REST API<br/>local bridges]
+    D[Assistant<br/>Transformers.js on WebGPU] -.->|drafted change| A
 ```
 
 ## Attribution
@@ -104,6 +109,8 @@ Hue Browser is built on the work of these projects.
 | [TypeScript](https://www.typescriptlang.org) | Typed language for application code |
 | [Tailwind CSS](https://tailwindcss.com) | Utility-first styling |
 | [daisyUI](https://daisyui.com) | Component and theme layer for Tailwind CSS |
+| [Transformers.js](https://huggingface.co/docs/transformers.js) | Runs the assistant model in the browser on WebGPU |
+| [Llama 3.2 1B Instruct](https://huggingface.co/onnx-community/Llama-3.2-1B-Instruct) | Language model behind the assistant |
 | [Biome](https://biomejs.dev) | Linting and formatting |
 | [Blume](https://useblume.dev) | Documentation site generator |
 | [PostCSS](https://postcss.org) | CSS processing pipeline for Tailwind CSS |
