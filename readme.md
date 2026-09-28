@@ -47,17 +47,17 @@ Use `npm run docs:preview` rather than serving `dist` directly. The documentatio
 Every commit on the default branch publishes a public image to the GitHub Container Registry, so you can run Hue Browser without building anything. The image supports both `linux/amd64` and `linux/arm64`, which covers a Raspberry Pi or an Apple Silicon Mac.
 
 ```bash
-docker run --rm -p 3000:3000 ghcr.io/seesharprun/hue-browser:latest
+docker run --rm -p 80:3000 ghcr.io/seesharprun/hue-browser:latest
 ```
 
 To build the image from your own checkout instead, build it and then run it.
 
 ```bash
 docker build -t hue-browser .
-docker run --rm -p 3000:3000 hue-browser
+docker run --rm -p 80:3000 hue-browser
 ```
 
-Either way the app is available at <http://localhost:3000>. Use a different host port, such as `-p 3100:3000`, when port 3000 is already serving the development server.
+Either way the app is available at <http://hue-browser.localhost>, a name that Chrome, Edge, and Firefox resolve to your own computer without a hosts file entry. Publishing on port 80 also leaves port 3000 free for the development server. When port 80 is taken, or when running rootless Docker or Podman, publish a high port such as `-p 3100:3000` and visit <http://hue-browser.localhost:3100>. Paired bridges are stored per address, so pick one and keep using it.
 
 ## Connect to a bridge
 
@@ -85,12 +85,41 @@ The application icon lives in `src/app/icon.svg`. The documentation commands and
 
 ## Stack
 
-The application layers a React interface over an API layer that handles all bridge communication, which keeps device transformations independent of the interface that triggers them.
+The browser keeps each person's paired bridge details and application keys in local storage. The Next.js API routes use those credentials only for the requested operation, then the server verifies the bridge certificate and identity before communicating with the bridge. Device resources are parsed into rows and returned to the interface as JSON.
 
 ```mermaid
-flowchart TD
-    A[Browser UI<br/>React and daisyUI] --> B[API layer<br/>Next.js route handlers]
-    B --> C[Philips Hue REST API<br/>local bridges]
+flowchart TB
+    subgraph browser["Browser"]
+        user["User"]
+        ui["React and daisyUI"]
+        storage[("Browser localStorage")]
+        user --> ui
+        ui -->|"Save or forget"| storage
+        storage -->|"Bridge IDs, addresses, keys"| ui
+    end
+
+    subgraph app["Hue Browser container"]
+        routes["Next.js API routes"]
+        transport["Verified HTTPS transport"]
+        parser["CLIP v2 resource parser"]
+        ca[("Philips Hue bridge root CA")]
+        routes -->|"Bridge request"| transport
+        transport -->|"Device resources"| parser
+        parser -->|"Devices, rooms, zones"| routes
+        transport -.->|"Verify certificate and identity"| ca
+    end
+
+    subgraph hue["Philips Hue services"]
+        discovery["Online bridge discovery"]
+        bridges["Local Philips Hue bridges"]
+    end
+
+    ui -->|"JSON API requests"| routes
+    routes -->|"Discover bridges"| discovery
+    discovery -->|"Bridge IDs and addresses"| routes
+    transport -->|"HTTPS; key when needed"| bridges
+    bridges -->|"CLIP v2 responses"| transport
+    routes -->|"JSON results"| ui
 ```
 
 ## Attribution
@@ -114,4 +143,4 @@ Hue Browser is built on the work of these projects.
 
 ## License
 
-Hue Browser is released under the MIT License.
+Hue Browser is released under the [MIT License](LICENSE).
