@@ -47,17 +47,17 @@ Use `npm run docs:preview` rather than serving `dist` directly. The documentatio
 Every commit on the default branch publishes a public image to the GitHub Container Registry, so you can run Hue Browser without building anything. The image supports both `linux/amd64` and `linux/arm64`, which covers a Raspberry Pi or an Apple Silicon Mac.
 
 ```bash
-docker run --rm -p 3000:3000 ghcr.io/seesharprun/hue-browser:latest
+docker run --rm -p 80:3000 ghcr.io/seesharprun/hue-browser:latest
 ```
 
 To build the image from your own checkout instead, build it and then run it.
 
 ```bash
 docker build -t hue-browser .
-docker run --rm -p 3000:3000 hue-browser
+docker run --rm -p 80:3000 hue-browser
 ```
 
-Either way the app is available at <http://localhost:3000>. Use a different host port, such as `-p 3100:3000`, when port 3000 is already serving the development server.
+Either way the app is available at <http://hue-browser.localhost>, a name that Chrome, Edge, and Firefox resolve to your own computer without a hosts file entry. Publishing on port 80 also leaves port 3000 free for the development server. When port 80 is taken, or when running rootless Docker or Podman, publish a high port such as `-p 3100:3000` and visit <http://hue-browser.localhost:3100>. Paired bridges are stored per address, so pick one and keep using it.
 
 ## Connect to a bridge
 
