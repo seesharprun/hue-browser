@@ -27,7 +27,7 @@
     "@types/node": "^26",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "blume": "^2.0.3",
+    "blume": "^2.1.0",
     "daisyui": "^5.7.46",
     "tailwindcss": "^4",
     "typescript": "^7"
